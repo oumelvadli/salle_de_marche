@@ -3,6 +3,6 @@ from .models import *
 
 
 admin.site.register(Cours_revaluation)
-admin.site.register(bande_fluctuation)
+admin.site.register(Bande_fluctuation)
 
 # Register your models here.

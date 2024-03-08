@@ -8,7 +8,7 @@ class Cours_revaluation(models.Model):
     cours = models.FloatField(null=False)
     
     
-class bande_fluctuation(models.Model):
+class Bande_fluctuation(models.Model):
     date = models.DateField(null=False)
     devise = models.CharField(null=False,max_length=15)
     min = models.FloatField(null=False)

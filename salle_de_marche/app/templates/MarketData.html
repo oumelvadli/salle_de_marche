@@ -1,9 +1,112 @@
 {% extends 'navbar.html' %}
 
+{% load static %}
+
 {% block title %}
   Market Data
 {% endblock %}
 
 {% block content %}
-<h1>Market data</h1>
+
+
+<div class="container-fluid pt-4 px-4">
+  <div class="row g-4">
+      <div class="col-sm-12 col-xl-12">
+          <div class="bg-light rounded h-100 p-4">
+              <h6 class="mb-4">Market Data</h6>
+              <div class="m-n2" style="display: flex;justify-content: space-between;">
+                  <a href="#" class="btn btn-lg btn-primary m-2" id="openCoursModal">Saisir cours du jour</a>
+                  <a href="#" class="btn btn-lg btn-secondary m-2" id="openBandeModal">Bande de fluctuation</a>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div id="addCours" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">						
+        <h4 class="modal-title">Saisir cours du jour</h4>
+        <button type="button"  id="annuler" ><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-sm-12 col-xl-12">
+          <div class="bg-light rounded h-100 p-4">
+              <form id="addCoursForm" method="post" action="{% url 'add_cours'%}">
+                {% csrf_token %}
+                  <div class="mb-3">
+                      <label  class="form-label">Date: </label>
+                      <input type="date" class="form-control" name="date" id="coursDate" required>
+                      <small id="dateError" class="text-danger"></small>
+                  </div>
+                  <div class="mb-3">
+                    <label  class="form-label">Devise:</label>
+                    <select name="devise" class="form-control" id="coursDevise" required>
+                      <option value="EUR">EUR</option>
+                      <option value="USD">USD</option>
+                    </select>
+                </div>          
+                <div class="mb-3">
+                  <label  class="form-label">Cours:</label>
+                  <input type="text" class="form-control" name="cours" id="coursValue" required>
+                  <small id="coursError" class="text-danger"></small>
+                </div>
+                <button type="button" id="annuler" class="btn btn-lg btn-secondary m-2" data-dismiss="modal">Cancel</button>
+                <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="addBande" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">						
+        <h4 class="modal-title">Bande de fluctuation</h4>
+        <button type="button"  id="annuler" ><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-sm-12 col-xl-12">
+          <div class="bg-light rounded h-100 p-4">
+              <form id="addBandeForm" method="post" action="{% url 'add_bande'%}">
+                {% csrf_token %}
+                  <div class="mb-3">
+                      <label  class="form-label">Date: </label>
+                      <input type="date" class="form-control" name="date" id="bandeDate" required>
+                      <small id="dateError" class="text-danger"></small>
+                  </div>
+                  <div class="mb-3">
+                    <label  class="form-label">Devise:</label>
+                    <select name="devise" class="form-control" id="bandeDevise" required>
+                      <option value="EUR">EUR</option>
+                      <option value="USD">USD</option>
+                    </select>
+                </div>          
+                <div class="mb-3">
+                  <label  class="form-label">Max: </label>
+                  <input type="text" class="form-control" name="max" id="bandeMax" required>
+                  <small id="maxError" class="text-danger"></small>
+                </div>
+                <div class="mb-3">
+                  <label  class="form-label">Min: </label>
+                  <input type="text" class="form-control" name="min" id="bandeMin" required>
+                  <small id="minError" class="text-danger"></small>
+                </div>
+                <button type="button" id="annuler" class="btn btn-lg btn-secondary m-2" data-dismiss="modal">Cancel</button>
+                <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 {% endblock %}

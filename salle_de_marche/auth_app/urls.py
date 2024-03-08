@@ -4,6 +4,6 @@ from . import views
 
 urlpatterns = [
     path('inscription',views.inscription,name="inscription"),
-    path('connexion',views.connexion,name="connexion"),
+    path('',views.connexion,name="connexion"),
     path('deconnexion',views.deconnexion,name="deconnexion"),
 ]
