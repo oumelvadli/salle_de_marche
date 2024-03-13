@@ -35,4 +35,5 @@ def deconnexion(request):
     logout(request)
     return redirect('connexion')
 
+
 # Create your views here.
