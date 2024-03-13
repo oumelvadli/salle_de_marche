@@ -11,3 +11,6 @@ class Bande_fluctuationForm(forms.ModelForm):
     class Meta:
         model= Bande_fluctuation
         fields = "__all__"
+        
+class ExcelImportForm(forms.Form):
+    fichier_excel = forms.FileField()

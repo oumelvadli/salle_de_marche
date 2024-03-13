@@ -1,13 +1,19 @@
 from django.shortcuts import render,redirect
 from .models import *
 from .forms import *
+from .forms import ExcelImportForm
 from django.contrib import messages
+import pandas as pd 
+
 
 def Accueil(request):
     return render(request,"Accueil.html",{'navbar':'Accueil'})
 
 def MarketData(request):
     return render(request,"MarketData.html",{'navbar':'MarketData'})
+
+def Traitment(request):
+    return render(request,"traitment.html",{'navbar':'Traitement'})
 
 def add_cours(request):
     if request.method == "POST":
@@ -26,3 +32,28 @@ def add_bande(request):
         return redirect('MarketData')
 
     return render(request,"MarketData.html",{'navbar':'MarketData'})
+
+
+def importer_donnees(request):
+    
+    if request.method == 'POST':
+        form = ExcelImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            fichier_excel = request.FILES['fichier_excel']
+            if fichier_excel.name.endswith('.xlsx'):
+                data = pd.read_excel(fichier_excel)
+                for index, row in data.iterrows():
+                    Operation.objects.create(date_operation=row['date_operation'],date_validation=row['date_validation'],conterpartie=row['conterpartie'],devise_achat=row['devise_achat'],devise_vente=row['devise_vente'],cours=row['cours'],montant_achat=row['montant_achat'],type=row['type'])
+                messages.success(request,'le fichier et importer avec success')
+            else:
+                # Fichier non pris en charge
+                messages.error(request, 'Le fichier doit être au format Excel (.xlsx)')
+    else:
+        form = ExcelImportForm()
+    return render(request, 'import.html', {'form': form})
+
+
+
+def visualisation(request):
+    operations = Operation.objects.all()
+    return render(request, 'visualiser.html', {'operations': operations})
