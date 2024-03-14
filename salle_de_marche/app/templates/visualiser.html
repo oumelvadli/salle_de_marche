@@ -1,0 +1,71 @@
+{% extends 'navbar.html' %}
+
+{% load static %}
+{% block content %}
+
+
+<style>
+    .table-container {
+        margin: auto;
+    }
+
+    table {
+        width: 80%;
+        border-collapse: collapse;
+
+    }
+
+    th,
+    td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    tr:hover {
+        background-color: #009CFF;
+    }
+</style>
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                <h2 >Données importées</h2>
+                <div class="table-responsive">
+                    <table >
+                        <tr>
+                            <th>date_operation</th>
+                            <th>date_validation</th>
+                            <th>conterpartie</th>
+                            <th>devise_achat</th>
+                            <th>devise_vente</th>
+                            <th>cours</th>
+                            <th>montant_achat</th>
+                            <th>type</th>
+                        </tr>
+                        {% for operation in operations %}
+                        <tr>
+                            <td>{{ operation.date_operation | date:"Y-m-d" }}</td>
+                            <td>{{ operation.date_validation| date:"Y-m-d" }}</td>
+                            <td>{{ operation.conterpartie }}</td>
+                            <td>{{ operation.devise_achat }}</td>
+                            <td>{{ operation.devise_vente}}</td>
+                            <td>{{ operation.date_cours }}</td>
+                            <td>{{ operation.montant_achat }}</td>
+                            <td>{{ operation.type }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
