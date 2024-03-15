@@ -21,12 +21,6 @@
                           {{ message }}
                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                       </div>
-                      <script>
-                          // Fermer l'alerte après 3 secondes
-                          setTimeout(function() {
-                              $('#success-alert').alert('close');
-                          }, 3000);
-                      </script>
                   {% endif %}
               {% endfor %}
           {% endif %}
@@ -55,7 +49,7 @@
                 {% csrf_token %}
                   <div class="mb-3">
                       <label  class="form-label">Date: </label>
-                      <input type="date" class="form-control" name="date" id="coursDate" required>
+                      <input type="date" class="form-control" name="date" id="coursDate" value="{{date_actuelle}}" required>
                       <small id="dateError" class="text-danger"></small>
                   </div>
                   <div class="mb-3">
@@ -94,7 +88,7 @@
                 {% csrf_token %}
                   <div class="mb-3">
                       <label  class="form-label">Date: </label>
-                      <input type="date" class="form-control" name="date" id="bandeDate" required>
+                      <input type="date" class="form-control" name="date" id="bandeDate" value="{{date_actuelle}}" required>
                       <small id="dateError" class="text-danger"></small>
                   </div>
                   <div class="mb-3">
@@ -123,5 +117,18 @@
     </div>
   </div>
 </div>
+
+
+<script>
+  setTimeout(function() {
+      $('#success-alert').alert('close');
+  }, 3000);
+  //______________ ici ce deux lignes ont pour but de verifier que la date est valide _________________
+  var dateActuelle = new Date().toISOString().split('T')[0];
+  document.getElementById("bandeDate").setAttribute("max", dateActuelle);
+  document.getElementById("coursDate").setAttribute("max", dateActuelle);
+  //______________ fin _______________________
+</script>
+
 
 {% endblock %}

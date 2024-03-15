@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render,redirect
 from .models import *
 from .forms import *
@@ -10,7 +11,8 @@ def Accueil(request):
     return render(request,"Accueil.html",{'navbar':'Accueil'})
 
 def MarketData(request):
-    return render(request,"MarketData.html",{'navbar':'MarketData'})
+    date_actuelle = datetime.date.today().strftime('%Y-%m-%d')
+    return render(request,"MarketData.html",{'navbar':'MarketData','date_actuelle':date_actuelle})
 
 def Traitment(request):
     return render(request,"traitment.html",{'navbar':'Traitement'})
