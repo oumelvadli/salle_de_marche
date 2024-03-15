@@ -31,7 +31,6 @@
                   <a href="#" class="btn btn-lg btn-primary m-2" id="openCoursModal">Saisir cours du jour</a>
                   <a href="#" class="btn btn-lg btn-secondary m-2" id="openBandeModal">Saisir Bande de fluctuation</a>
                   <a href="#" class="btn btn-lg btn-secondary m-2" id="openModifierCoursModal">modifier cours du jour</a>
-
               </div>
           </div>
       </div>
@@ -195,7 +194,7 @@
                   <div class="mb-3">
                       <label  class="form-label">Date: </label>
                       <input type="date" class="form-control" name="date" id="bandeDate" value="{{date_actuelle}}" required>
-                      <small id="dateError" class="text-danger"></small>
+                      <small id="dateErrorBande" class="text-danger"></small>
                   </div>
                   <div class="mb-3">
                     <label  class="form-label">Devise:</label>
@@ -223,7 +222,29 @@
     </div>
   </div>
 </div>
+<script>
+  var dateActuelle = new Date().toISOString().slice(0,10);
 
+  document.getElementById('coursDate').addEventListener('change', function(){
+      var selectedDate = this.value;
+
+      if (selectedDate !== dateActuelle) {
+          document.getElementById('dateError').textContent = "Attention : La date sélectionnée n'est pas la date actuelle.";
+      } else {
+          document.getElementById('dateError').textContent = "";
+      }
+  });
+
+  document.getElementById('bandeDate').addEventListener('change', function(){
+    var selectedDate = this.value;
+
+    if (selectedDate !== dateActuelle) {
+        document.getElementById('dateErrorBande').textContent = "Attention : La date sélectionnée n'est pas la date actuelle.";
+    } else {
+        document.getElementById('dateErrorBande').textContent = "";
+    }
+});
+</script>
 
 <script>
   setTimeout(function() {
