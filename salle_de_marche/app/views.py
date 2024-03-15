@@ -10,7 +10,9 @@ def Accueil(request):
     return render(request,"Accueil.html",{'navbar':'Accueil'})
 
 def MarketData(request):
-    return render(request,"MarketData.html",{'navbar':'MarketData'})
+    Cours_revaluations = Cours_revaluation.objects.all()
+    Bande_fluctuations = Bande_fluctuation.objects.all()
+    return render(request,"MarketData.html",{'navbar':'MarketData','Cours_revaluations':Cours_revaluations,'Bande_fluctuations':Bande_fluctuations})
 
 def Traitment(request):
     return render(request,"traitment.html",{'navbar':'Traitement'})
@@ -24,6 +26,15 @@ def add_cours(request):
 
     return render(request,"MarketData.html",{'navbar':'MarketData'})
 
+def edit_cours(request, id):
+    cours = Cours_revaluation.objects.get(id=id)
+    return render(request,'materiels/edit.html',{'navbar':'MarketData','cours':cours})
+def update_cours(request, id):
+    cours = Cours_revaluation.objects.get(id=id)
+    form = Cours_revaluationForm(request.POST, instance=cours)
+    form.save()
+    return redirect('MarketData')
+
 def add_bande(request):
     if request.method == "POST":
         form = Bande_fluctuationForm(request.POST)
@@ -32,6 +43,16 @@ def add_bande(request):
         return redirect('MarketData')
 
     return render(request,"MarketData.html",{'navbar':'MarketData'})
+
+# def edit_bande(request, id):
+#     bande = Bande_fluctuation.objects.get(id=id)
+#     return render(request,'materiels/edit.html',{'navbar':'MarketData','bande':bande})
+# def update_bande(request, id):
+#     bande = Bande_fluctuation.objects.get(id=id)
+#     form = Bande_fluctuationForm(request.POST, instance=bande)
+#     form.save()
+#     return redirect('MarketData')
+
 
 
 def importer_donnees(request):
@@ -44,7 +65,7 @@ def importer_donnees(request):
                 data = pd.read_excel(fichier_excel)
                 for index, row in data.iterrows():
                     Operation.objects.create(date_operation=row['date_operation'],date_validation=row['date_validation'],conterpartie=row['conterpartie'],devise_achat=row['devise_achat'],devise_vente=row['devise_vente'],cours=row['cours'],montant_achat=row['montant_achat'],type=row['type'])
-                messages.success(request,'le fichier et importer avec success')
+                messages.success(request,'le fichier est importé avec succès')
             else:
                 # Fichier non pris en charge
                 messages.error(request, 'Le fichier doit être au format Excel (.xlsx)')
