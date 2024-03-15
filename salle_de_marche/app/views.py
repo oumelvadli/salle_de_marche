@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render,redirect
 from .models import *
 from .forms import *
@@ -12,7 +13,8 @@ def Accueil(request):
 def MarketData(request):
     Cours_revaluations = Cours_revaluation.objects.all()
     Bande_fluctuations = Bande_fluctuation.objects.all()
-    return render(request,"MarketData.html",{'navbar':'MarketData','Cours_revaluations':Cours_revaluations,'Bande_fluctuations':Bande_fluctuations})
+    date_actuelle = datetime.date.today().strftime('%Y-%m-%d')
+    return render(request,"MarketData.html",{'navbar':'MarketData','date_actuelle':date_actuelle,'Cours_revaluations':Cours_revaluations,'Bande_fluctuations':Bande_fluctuations})
 
 def Traitment(request):
     return render(request,"traitment.html",{'navbar':'Traitement'})
