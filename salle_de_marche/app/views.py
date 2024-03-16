@@ -11,8 +11,8 @@ def Accueil(request):
     return render(request,"Accueil.html",{'navbar':'Accueil'})
 
 def MarketData(request):
-    Cours_revaluations = Cours_revaluation.objects.all()
-    Bande_fluctuations = Bande_fluctuation.objects.all()
+    Cours_revaluations = Cours_revaluation.objects.all().order_by('-date')
+    Bande_fluctuations = Bande_fluctuation.objects.all().order_by('-date')
     date_actuelle = datetime.date.today().strftime('%Y-%m-%d')
     return render(request,"MarketData.html",{'navbar':'MarketData','date_actuelle':date_actuelle,'Cours_revaluations':Cours_revaluations,'Bande_fluctuations':Bande_fluctuations})
 
@@ -22,8 +22,13 @@ def Traitment(request):
 def add_cours(request):
     if request.method == "POST":
         form = Cours_revaluationForm(request.POST)
-        form.save()
-        messages.success(request,"Le cours du jour a été ajouté avec succès")
+        if form.is_valid():
+            date = form.cleaned_data['date']
+            if Cours_revaluation.objects.filter(date=date).exists():
+                messages.error(request, 'Cette date existe déjà. Veuillez saisir une autre date.')
+            else:
+                form.save()
+                messages.success(request,"Le cours du jour a été ajouté avec succès")
         return redirect('MarketData')
     return render(request,"MarketData.html",{'navbar':'MarketData'})
 
@@ -38,8 +43,13 @@ def update_cours(request, id):
 def add_bande(request):
     if request.method == "POST":
         form = Bande_fluctuationForm(request.POST)
-        form.save()
-        messages.success(request,"Le bande de fluctuation  a été ajouté avec succès.")
+        if form.is_valid():
+            date = form.cleaned_data['date']
+            if Bande_fluctuation.objects.filter(date=date).exists():
+                messages.error(request, 'Cette date existe déjà. Veuillez saisir une autre date.')
+            else:
+                form.save()
+                messages.success(request, 'La Bande de fluctuation a été ajouté avec succès.')
         return redirect('MarketData')
 
     return render(request,"MarketData.html",{'navbar':'MarketData'})

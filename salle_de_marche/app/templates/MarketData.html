@@ -13,14 +13,19 @@
           <div class="bg-light rounded h-100 p-4">
               <h6 class="mb-4">Market Data</h6>
               {% if messages %}
-              {% for message in messages %}
-                  {% if message.tags == 'success' %}
-                      <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% elif message.tags == 'error' %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="success-alert">
                           {{ message }}
                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>
-                  {% endif %}
-              {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
               {% endif %}
               <div class="m-n2" style="display: flex;justify-content: space-between;">
                   <button class="btn btn-lg btn-primary m-2" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
@@ -62,7 +67,7 @@
               <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
                 <div class="col-sm-12 col-xl-4 float-end">
 
-                    <form id="addBandeForm" method="post" action="">
+                    <form id="addBandeForm" method="post" action="{% url 'add_bande' %}">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label class="form-label">Date: </label>
@@ -242,15 +247,4 @@
     </div>
   </div>
 </div>
-
-
-
-
-    
-
-
-
-  
-    
-
 {% endblock %}
