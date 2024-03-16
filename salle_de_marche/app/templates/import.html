@@ -43,8 +43,11 @@
                         Import
                     </button>
                 </div>
+                <br>
                 <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
                     <div class="col-sm-12 col-xl-12">
+                        <h6 class="mb-4">Importer un fichier excel</h6>
+
                             <form action="{% url 'importer_donnes' %}" method="post" enctype="multipart/form-data"
                                 class="needs-validation" novalidate>
                                 {% csrf_token %}
@@ -55,7 +58,7 @@
                                 </div>
                                 <input type="submit" class="btn btn-lg btn-success m-2" value="Importer">
                             </form>
-=                    </div>
+                   </div>
                 </div>
             </div>
         </div>
@@ -63,19 +66,7 @@
 </div>
 
 
-<div id="import" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Importer un fichier excel</h4>
-                <button type="button" id="annuler"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
 
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
     // Ajoute un gestionnaire d'événements clic au lien d'importation

@@ -46,7 +46,6 @@ def add_bande(request):
 
 
 def update_bande(request, id):
-    print("==================================================")
     bande = Bande_fluctuation.objects.get(id=id)
     form = Bande_fluctuationForm(request.POST, instance=bande)
     form.save()
@@ -70,10 +69,10 @@ def importer_donnees(request):
                 messages.error(request, 'Le fichier doit être au format Excel (.xlsx)')
     else:
         form = ExcelImportForm()
-    return render(request, 'import.html', {'form': form})
+    return render(request, 'import.html', {'form': form ,'navbar':'importer'})
 
 
 
 def visualisation(request):
     operations = Operation.objects.all()
-    return render(request, 'visualiser.html', {'operations': operations})
+    return render(request, 'visualiser.html', {'operations': operations,'navbar':'visualisation'})

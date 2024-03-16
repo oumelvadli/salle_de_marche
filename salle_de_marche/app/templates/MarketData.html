@@ -34,8 +34,6 @@
               <br>
               <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
                 <div class="col-sm-12 col-xl-4 float-start">
-            
-
                       <form id="addCoursForm" method="post" action="{% url 'add_cours' %}">
                         {% csrf_token %}
                           <div class="mb-3">
@@ -62,7 +60,7 @@
               <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
                 <div class="col-sm-12 col-xl-4 float-end">
 
-                    <form id="addBandeForm" method="post" action="">
+                    <form  method="post" action="{% url 'add_bande' %}">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label class="form-label">Date: </label>
