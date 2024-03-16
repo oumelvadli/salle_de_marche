@@ -13,14 +13,19 @@
           <div class="bg-light rounded h-100 p-4">
               <h6 class="mb-4">Market Data</h6>
               {% if messages %}
-              {% for message in messages %}
-                  {% if message.tags == 'success' %}
-                      <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% elif message.tags == 'error' %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="success-alert">
                           {{ message }}
                           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>
-                  {% endif %}
-              {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
               {% endif %}
               <div class="m-n2" style="display: flex;justify-content: space-between;">
                   <button class="btn btn-lg btn-primary m-2" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
@@ -38,7 +43,7 @@
                         {% csrf_token %}
                           <div class="mb-3">
                               <label class="form-label">Date: </label>
-                              <input type="date" class="form-control" name="date" id="coursDate" value="{{ date_actuelle | date:'Y-m-d' }}" max="{{ date_actuelle }}" required>
+                              <input type="date" class="form-control" name="date" id="coursDate" value="{{date_actuelle}}" required>
                               <small id="dateError" class="text-danger"></small>
                           </div>
                           <div class="mb-3">
@@ -64,8 +69,8 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label class="form-label">Date: </label>
-                            <input type="date" class="form-control" name="date" id="bandeDate" required>
-                            <small id="dateError" class="text-danger"></small>
+                            <input type="date" class="form-control" name="date" id="bandeDate" value="{{date_actuelle}}" required>
+                            <small id="dateErrorBande" class="text-danger"></small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Devise:</label>
@@ -88,9 +93,6 @@
                     </form>
                 </div>
             </div>
-            
-
-
           </div>
       </div>
 
@@ -99,6 +101,7 @@
 
       <div class="col-sm-12 col-xl-6">
         <div class="bg-light rounded h-100 p-4">
+          <h6 class="mb-4">Cours du jour</h6>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -124,6 +127,7 @@
 
     <div class="col-sm-12 col-xl-6">
       <div class="bg-light rounded h-100 p-4">
+        <h6 class="mb-4">Bande de fluctuation</h6>
           <table class="table table-bordered">
               <thead>
                   <tr>
@@ -169,7 +173,7 @@
                   <div class="mb-3">
                       <label class="form-label">Date: </label>
                       <input type="date" class="form-control" name="date" id="editCoursDate" value="{{ cours.date |date:'Y-m-d' }}" required>
-                      <small id="dateError" class="text-danger"></small>
+                      <small id="editDateError" class="text-danger"></small>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Devise:</label>
@@ -212,7 +216,7 @@
                   <div class="mb-3">
                       <label class="form-label">Date: </label>
                       <input type="date" class="form-control" name="date" id="editbandeDate"  required>
-                      <small id="dateError" class="text-danger"></small>
+                      <small id="editDateErrorBande" class="text-danger"></small>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Devise:</label>
@@ -240,45 +244,4 @@
     </div>
   </div>
 </div>
-<script>
-  setTimeout(function() {
-      $('#success-alert').alert('close');
-  }, 3000);
-</script>
-
-
-
-<script>
-  function editCours(date, devise, cours, id) {
-      document.getElementById("editCoursDate").value = date;
-      document.getElementById("editCoursDevise").value = devise;
-      document.getElementById("editCoursValue").value = cours;
-      document.getElementById("formcours").action = "/update_cours/"+id;
-
-
-      // Ouvrir le modal de modification
-      $('#editCours').modal('show');
-  }
-  </script>
-
-  <script>
-    function editBand(date, devise, Bid,Ask, id) {
-        document.getElementById("editbandeDate").value = date;
-        document.getElementById("editbandeDevise").value = devise;
-        document.getElementById("editbandeBid").value = Bid;
-        document.getElementById("editbandeAsk").value = Ask;
-        document.getElementById("formbande").action = "/update_bande/"+id;
-  
-  
-        // Ouvrir le modal de modification
-        $('#editBande').modal('show');
-    }
-    </script>
-
-
-
-
-  
-    
-
 {% endblock %}
