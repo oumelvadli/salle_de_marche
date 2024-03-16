@@ -28,13 +28,12 @@ def add_cours(request):
 
     return render(request,"MarketData.html",{'navbar':'MarketData'})
 
-def edit_cours(request, id):
-    cours = Cours_revaluation.objects.get(id=id)
-    return render(request,'materiels/edit.html',{'navbar':'MarketData','cours':cours})
+
 def update_cours(request, id):
     cours = Cours_revaluation.objects.get(id=id)
     form = Cours_revaluationForm(request.POST, instance=cours)
     form.save()
+    
     return redirect('MarketData')
 
 def add_bande(request):
@@ -46,14 +45,13 @@ def add_bande(request):
 
     return render(request,"MarketData.html",{'navbar':'MarketData'})
 
-# def edit_bande(request, id):
-#     bande = Bande_fluctuation.objects.get(id=id)
-#     return render(request,'materiels/edit.html',{'navbar':'MarketData','bande':bande})
-# def update_bande(request, id):
-#     bande = Bande_fluctuation.objects.get(id=id)
-#     form = Bande_fluctuationForm(request.POST, instance=bande)
-#     form.save()
-#     return redirect('MarketData')
+
+def update_bande(request, id):
+    print("==================================================")
+    bande = Bande_fluctuation.objects.get(id=id)
+    form = Bande_fluctuationForm(request.POST, instance=bande)
+    form.save()
+    return redirect('MarketData')
 
 
 

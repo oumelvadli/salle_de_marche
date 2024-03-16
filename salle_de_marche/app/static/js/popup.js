@@ -17,6 +17,9 @@ $(document).ready(function(){
         $("#addBande").modal('show');
     });
 
+    $("#openModifierBandeModal").click(function(){ // Correction ici
+        $("#editBande").modal('show');
+    });
     //-------------------------- importation ---------------------------//
 
     $("#openImportModal").click(function(){

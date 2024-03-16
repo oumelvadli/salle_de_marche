@@ -7,9 +7,6 @@
 {% endblock %}
 
 {% block content %}
-
-
-
 <div class="container-fluid pt-4 px-4">
   <div class="row g-4">
       <div class="col-sm-12 col-xl-12">
@@ -24,17 +21,83 @@
                       </div>
                   {% endif %}
               {% endfor %}
-          {% endif %}
-          
-            
+              {% endif %}
               <div class="m-n2" style="display: flex;justify-content: space-between;">
-                  <a href="#" class="btn btn-lg btn-primary m-2" id="openCoursModal">Saisir cours du jour</a>
-                  <a href="#" class="btn btn-lg btn-secondary m-2" id="openBandeModal">Saisir Bande de fluctuation</a>
-                  <a href="#" class="btn btn-lg btn-secondary m-2" id="openModifierCoursModal">modifier cours du jour</a>
-
+                  <button class="btn btn-lg btn-primary m-2" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                    Saisir cours du jour
+                  </button>
+                  <button class="btn btn-lg btn-secondary m-2" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                    Saisir Bande de fluctuation
+                  </button>
+                  
               </div>
+              <br>
+              <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                <div class="col-sm-12 col-xl-4 float-start">
+            
+
+                      <form id="addCoursForm" method="post" action="{% url 'add_cours' %}">
+                        {% csrf_token %}
+                          <div class="mb-3">
+                              <label class="form-label">Date: </label>
+                              <input type="date" class="form-control" name="date" id="coursDate" value="{{ date_actuelle | date:'Y-m-d' }}" max="{{ date_actuelle }}" required>
+                              <small id="dateError" class="text-danger"></small>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Devise:</label>
+                            <select name="devise" class="form-control" id="coursDevise" required>
+                              <option value="EUR">EUR</option>
+                              <option value="USD">USD</option>
+                            </select>
+                        </div>          
+                        <div class="mb-3">
+                          <label class="form-label">Cours:</label>
+                          <input type="number" class="form-control" name="cours" id="coursValue" min="1" step="0.001" required>
+                          <small id="coursError" class="text-danger"></small>
+                        </div>
+                        <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
+                      </form>
+                </div>
+              </div>
+              <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+                <div class="col-sm-12 col-xl-4 float-end">
+
+                    <form id="addBandeForm" method="post" action="">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Date: </label>
+                            <input type="date" class="form-control" name="date" id="bandeDate" required>
+                            <small id="dateError" class="text-danger"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Devise:</label>
+                            <select name="devise" class="form-control" id="bandeDevise" required>
+                                <option value="EUR">EUR</option>
+                                <option value="USD">USD</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Bid: </label>
+                            <input type="number" class="form-control" name="Bid" id="bandeMax" step="0.001" required>
+                            <small id="maxError" class="text-danger"></small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ask: </label>
+                            <input type="number" class="form-control" name="Ask" id="bandeMin" step="0.001" required>
+                            <small id="minError" class="text-danger"></small>
+                        </div>
+                        <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
+                    </form>
+                </div>
+            </div>
+            
+
+
           </div>
       </div>
+
+
+
 
       <div class="col-sm-12 col-xl-6">
         <div class="bg-light rounded h-100 p-4">
@@ -48,18 +111,19 @@
                     </tr>
                 </thead>
                 <tbody>
-
-                    {% for i in Cours_revaluations%}
+                    {% for cours in Cours_revaluations %}
                     <tr>
-                        <td>{{i.date}}</td>
-                        <td>{{i.devise}}</td>
-                        <td>{{i.cours}}</td>
-                      </tr>
-                      {% endfor %}
+                        <td>{{ cours.date }}</td>
+                        <td>{{ cours.devise }}</td>
+                        <td>{{ cours.cours }}</td>
+                        <td><a href="#"   onclick="editCours( '{{ cours.date | date:'Y-m-d' }}' , '{{ cours.devise }}', '{{ cours.cours }}', '{{cours.id}}')">modifier</a></td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+
     <div class="col-sm-12 col-xl-6">
       <div class="bg-light rounded h-100 p-4">
           <table class="table table-bordered">
@@ -73,14 +137,14 @@
                   </tr>
               </thead>
               <tbody>
-                  {% for i in Bande_fluctuations%}
+                  {% for bande in Bande_fluctuations %}
                   <tr>
-                      <td>{{i.date}}</td>
-                      <td>{{i.devise}}</td>
-                      <td>{{i.Bid}}</td>
-                      <td>{{i.Ask}}</td>
-                      <td><a href="" btn btn-primary m-2>modifier</a></td>
-                  </tr>
+                      <td>{{ bande.date }}</td>
+                      <td>{{ bande.devise }}</td>
+                      <td>{{ bande.Bid }}</td>
+                      <td>{{ bande.Ask }}</td>
+                      <td><a href="#"    onclick="editBand( '{{ bande.date | date:'Y-m-d' }}' , '{{ bande.devise }}', '{{ bande.Bid }}','{{ bande.Ask }}' , '{{bande.id}}')">modifier</a></td>
+                    </tr>
                   {% endfor %}
               </tbody>
           </table>
@@ -90,50 +154,6 @@
 </div>
 
 
-<!-- ------------------------------------------ add cours -------------------------------------------- -->
-
-
-<div id="addCours" class="modal fade">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">						
-        <h4 class="modal-title">Saisir cours du jour</h4>
-        <button type="button"  id="annuler" ><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <div class="col-sm-12 col-xl-12">
-          <div class="bg-light rounded h-100 p-4">
-              <form id="addCoursForm" method="post" action="{% url 'add_cours'%}">
-                {% csrf_token %}
-                  <div class="mb-3">
-                      <label  class="form-label">Date: </label>
-                      <input type="date" class="form-control" name="date" id="coursDate" value="{{date_actuelle}}" required>
-                      <small id="dateError" class="text-danger"></small>
-                  </div>
-                  <div class="mb-3">
-                    <label  class="form-label">Devise:</label>
-                    <select name="devise" class="form-control" id="coursDevise" required>
-                      <option value="EUR">EUR</option>
-                      <option value="USD">USD</option>
-                    </select>
-                </div>          
-                <div class="mb-3">
-                  <label  class="form-label">Cours:</label>
-                  <input type="number" class="form-control" name="cours" id="coursValue" min=1 step="0.001" required>
-                  <small id="coursError" class="text-danger"></small>
-                </div>
-                <button type="button" id="annuler" class="btn btn-lg btn-secondary m-2" data-dismiss="modal">Cancel</button>
-                <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
-              </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 <!-- ------------------------------------------ edit cours -------------------------------------------- -->
 
 <div id="editCours" class="modal fade">
@@ -141,32 +161,32 @@
     <div class="modal-content">
       <div class="modal-header">						
         <h4 class="modal-title">Modifier cours du jour</h4>
-        <button type="button"  id="annuler" ><i class="fa-solid fa-xmark"></i></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="col-sm-12 col-xl-12">
           <div class="bg-light rounded h-100 p-4">
-              <form  method="post" action="">
-                {% csrf_token %}
+            <form method="post"   id="formcours" action="">
+              {% csrf_token %}
                   <div class="mb-3">
-                      <label  class="form-label">Date: </label>
-                      <input type="date" class="form-control" name="date" id="editCoursDate" required>
+                      <label class="form-label">Date: </label>
+                      <input type="date" class="form-control" name="date" id="editCoursDate" value="{{ cours.date |date:'Y-m-d' }}" required>
                       <small id="dateError" class="text-danger"></small>
                   </div>
                   <div class="mb-3">
-                    <label  class="form-label">Devise:</label>
+                    <label class="form-label">Devise:</label>
                     <select name="devise" class="form-control" id="editCoursDevise" required>
-                      <option value="EUR">EUR</option>
-                      <option value="USD">USD</option>
+                      <option value="EUR" {% if cours.devise == "EUR" %} selected {% endif %}>EUR</option>
+                      <option value="USD" {% if cours.devise == "USD" %} selected {% endif %}>USD</option>
                     </select>
                 </div>          
                 <div class="mb-3">
-                  <label  class="form-label">Cours:</label>
-                  <input type="number" class="form-control" name="cours" id="editCoursValue" min=1 step="0.001" required>
+                  <label class="form-label">Cours:</label>
+                  <input type="number" class="form-control" name="cours" id="editCoursValue" min="1" step="0.001" value="{{ cours.cours }}" required>
                   <small id="coursError" class="text-danger"></small>
                 </div>
-                <button type="button"  class="btn btn-lg btn-secondary m-2" data-dismiss="modal">Cancel</button>
-                <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
+                <button type="button" class="btn btn-lg btn-secondary m-2" data-bs-dismiss="modal">Cancel</button>
+                <input type="submit" class="btn btn-lg btn-success m-2" value="Valider" >
               </form>
           </div>
         </div>
@@ -176,45 +196,44 @@
 </div>
 
 
-<!---------------------------------------------------------- add bande ------------------------------------------->
 
+<!---------------------------------------------------------- edit bande ------------------------------------------->
 
-
-<div id="addBande" class="modal fade">
+<div id="editBande" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">						
-        <h4 class="modal-title">Saisir Bande de fluctuation</h4>
-        <button type="button"  id="annuler" ><i class="fa-solid fa-xmark"></i></button>
+        <h4 class="modal-title">modifier le Bande de fluctuation</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="col-sm-12 col-xl-12">
           <div class="bg-light rounded h-100 p-4">
-              <form id="addBandeForm" method="post" action="{% url 'add_bande'%}">
+              <form  id="formbande" method="post" action="">
                 {% csrf_token %}
                   <div class="mb-3">
-                      <label  class="form-label">Date: </label>
-                      <input type="date" class="form-control" name="date" id="bandeDate" value="{{date_actuelle}}" required>
+                      <label class="form-label">Date: </label>
+                      <input type="date" class="form-control" name="date" id="editbandeDate"  required>
                       <small id="dateError" class="text-danger"></small>
                   </div>
                   <div class="mb-3">
-                    <label  class="form-label">Devise:</label>
-                    <select name="devise" class="form-control" id="bandeDevise" required>
-                      <option value="EUR">EUR</option>
-                      <option value="USD">USD</option>
+                    <label class="form-label">Devise:</label>
+                    <select name="devise" class="form-control" id="editbandeDevise" required>
+                      <option value="EUR" {% if cours.devise == "EUR" %} selected {% endif %}>EUR</option>
+                      <option value="USD" {% if cours.devise == "USD" %} selected {% endif %}>USD</option>
                     </select>
                 </div>          
                 <div class="mb-3">
-                  <label  class="form-label">Bid: </label>
-                  <input type="number" class="form-control" name="Bid" id="bandeMax" step="0.001" required>
+                  <label class="form-label">Bid: </label>
+                  <input type="number" class="form-control" name="Bid" id="editbandeBid" step="0.001" required>
                   <small id="maxError" class="text-danger"></small>
                 </div>
                 <div class="mb-3">
-                  <label  class="form-label">Ask: </label>
-                  <input type="number" class="form-control" name="Ask" id="bandeMin" step="0.001" required>
+                  <label class="form-label">Ask: </label>
+                  <input type="number" class="form-control" name="Ask" id="editbandeAsk" step="0.001" required>
                   <small id="minError" class="text-danger"></small>
                 </div>
-                <button type="button" id="annuler" class="btn btn-lg btn-secondary m-2" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-lg btn-secondary m-2" data-bs-dismiss="modal">Cancel</button>
                 <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
               </form>
           </div>
@@ -223,18 +242,46 @@
     </div>
   </div>
 </div>
-
 
 <script>
   setTimeout(function() {
       $('#success-alert').alert('close');
   }, 3000);
-  //______________ ici ce deux lignes ont pour but de verifier que la date est valide _________________
-  var dateActuelle = new Date().toISOString().split('T')[0];
-  document.getElementById("bandeDate").setAttribute("max", dateActuelle);
-  document.getElementById("coursDate").setAttribute("max", dateActuelle);
-  //______________ fin _______________________
 </script>
 
+
+
+<script>
+  function editCours(date, devise, cours, id) {
+      document.getElementById("editCoursDate").value = date;
+      document.getElementById("editCoursDevise").value = devise;
+      document.getElementById("editCoursValue").value = cours;
+      document.getElementById("formcours").action = "/update_cours/"+id;
+
+
+      // Ouvrir le modal de modification
+      $('#editCours').modal('show');
+  }
+  </script>
+
+  <script>
+    function editBand(date, devise, Bid,Ask, id) {
+        document.getElementById("editbandeDate").value = date;
+        document.getElementById("editbandeDevise").value = devise;
+        document.getElementById("editbandeBid").value = Bid;
+        document.getElementById("editbandeAsk").value = Ask;
+        document.getElementById("formbande").action = "/update_bande/"+id;
+  
+  
+        // Ouvrir le modal de modification
+        $('#editBande').modal('show');
+    }
+    </script>
+
+
+
+
+  
+    
 
 {% endblock %}
