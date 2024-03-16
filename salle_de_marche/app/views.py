@@ -25,7 +25,6 @@ def add_cours(request):
         form.save()
         messages.success(request,"Le cours du jour a été ajouté avec succès")
         return redirect('MarketData')
-
     return render(request,"MarketData.html",{'navbar':'MarketData'})
 
 
