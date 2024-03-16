@@ -36,7 +36,13 @@ def add_cours(request):
 def update_cours(request, id):
     cours = Cours_revaluation.objects.get(id=id)
     form = Cours_revaluationForm(request.POST, instance=cours)
-    form.save()
+    if form.is_valid():
+            date = form.cleaned_data['date']
+            if Cours_revaluation.objects.filter(date=date).exists():
+                messages.error(request, 'Cette date existe déjà. Veuillez saisir une autre date.')
+            else:
+                form.save()
+                messages.success(request,"Le cours du jour a été ajouté avec succès")
     
     return redirect('MarketData')
 
@@ -56,10 +62,15 @@ def add_bande(request):
 
 
 def update_bande(request, id):
-    print("==================================================")
     bande = Bande_fluctuation.objects.get(id=id)
     form = Bande_fluctuationForm(request.POST, instance=bande)
-    form.save()
+    if form.is_valid():
+        date = form.cleaned_data['date']
+        if Bande_fluctuation.objects.filter(date=date).exists():
+            messages.error(request, 'Cette date existe déjà. Veuillez saisir une autre date.')
+        else:
+            form.save()
+            messages.success(request, 'La Bande de fluctuation a été ajouté avec succès.')
     return redirect('MarketData')
 
 
