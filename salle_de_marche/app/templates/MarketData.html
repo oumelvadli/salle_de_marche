@@ -40,7 +40,7 @@
                         {% csrf_token %}
                           <div class="mb-3">
                               <label class="form-label">Date: </label>
-                              <input type="date" class="form-control" name="date" id="coursDate" value="{{ date_actuelle | date:'Y-m-d' }}" max="{{ date_actuelle }}" required>
+                              <input type="date" class="form-control" name="date" id="coursDate" value="{{date_actuelle}}" required>
                               <small id="dateError" class="text-danger"></small>
                           </div>
                           <div class="mb-3">
@@ -66,8 +66,8 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label class="form-label">Date: </label>
-                            <input type="date" class="form-control" name="date" id="bandeDate" required>
-                            <small id="dateError" class="text-danger"></small>
+                            <input type="date" class="form-control" name="date" id="bandeDate" value="{{date_actuelle}}" required>
+                            <small id="dateErrorBande" class="text-danger"></small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Devise:</label>
@@ -171,7 +171,7 @@
                   <div class="mb-3">
                       <label class="form-label">Date: </label>
                       <input type="date" class="form-control" name="date" id="editCoursDate" value="{{ cours.date |date:'Y-m-d' }}" required>
-                      <small id="dateError" class="text-danger"></small>
+                      <small id="editDateError" class="text-danger"></small>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Devise:</label>
@@ -214,7 +214,7 @@
                   <div class="mb-3">
                       <label class="form-label">Date: </label>
                       <input type="date" class="form-control" name="date" id="editbandeDate"  required>
-                      <small id="dateError" class="text-danger"></small>
+                      <small id="editDateErrorBande" class="text-danger"></small>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Devise:</label>
@@ -261,6 +261,14 @@
       // Ouvrir le modal de modification
       $('#editCours').modal('show');
   }
+   //______________ ici ce deux lignes ont pour but de verifier que la date est valide _________________
+   var dateActuelle = new Date().toISOString().split('T')[0];
+   document.getElementById("bandeDate").setAttribute("max", dateActuelle);
+   document.getElementById("coursDate").setAttribute("max", dateActuelle);
+   document.getElementById("editCoursDate").setAttribute("max", dateActuelle);
+   document.getElementById("editbandeDate").setAttribute("max", dateActuelle);
+   //______________ fin _______________________
+ 
   </script>
 
   <script>
@@ -276,7 +284,48 @@
         $('#editBande').modal('show');
     }
     </script>
+    <script>
+      var dateActuelle = new Date().toISOString().slice(0,10);
+    
+      document.getElementById('coursDate').addEventListener('change', function(){
+          var selectedDate = this.value;
+    
+          if (selectedDate !== dateActuelle) {
+              document.getElementById('dateError').textContent = "Attention : La date sélectionnée n'est pas la date actuelle.";
+          } else {
+              document.getElementById('dateError').textContent = "";
+          }
+      });
+    
+      document.getElementById('bandeDate').addEventListener('change', function(){
+        var selectedDate = this.value;
+    
+        if (selectedDate !== dateActuelle) {
+            document.getElementById('dateErrorBande').textContent = "Attention : La date sélectionnée n'est pas la date actuelle.";
+        } else {
+            document.getElementById('dateErrorBande').textContent = "";
+        }
+    });
+    document.getElementById('editCoursDate').addEventListener('change', function(){
+      var selectedDate = this.value;
 
+      if (selectedDate !== dateActuelle) {
+          document.getElementById('editDateError').textContent = "Attention : La date sélectionnée n'est pas la date actuelle.";
+      } else {
+          document.getElementById('editDateError').textContent = "";
+      }
+  });
+  document.getElementById('editbandeDate').addEventListener('change', function(){
+    var selectedDate = this.value;
+
+    if (selectedDate !== dateActuelle) {
+        document.getElementById('editDateErrorBande').textContent = "Attention : La date sélectionnée n'est pas la date actuelle.";
+    } else {
+        document.getElementById('editDateErrorBande').textContent = "";
+    }
+});
+    </script>
+    
 
 
 
