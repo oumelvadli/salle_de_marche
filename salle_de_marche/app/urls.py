@@ -11,4 +11,6 @@ urlpatterns = [
     path('add_bande/',views.add_bande,name="add_bande"),
     path('importer/',views.importer_donnees,name="importer_donnes"),
     path('visualisation/',views.visualisation,name="visualisation"),
+    path('filtrer/',views.filtrer,name="filtrer"),
+
 ]

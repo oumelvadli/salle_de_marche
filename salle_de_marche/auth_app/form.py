@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
-class CustomUerCreatinForm(UserCreationForm):
+class CustomUerCreationForm(UserCreationForm):
     password1=forms.CharField(
         label="password",
         strip=False,

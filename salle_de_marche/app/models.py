@@ -17,6 +17,7 @@ class Bande_fluctuation(models.Model):
 
 
 class Operation(models.Model):
+    id = models.AutoField(primary_key=True, unique=True, editable=False) 
     date_operation = models.DateField()
     date_validation = models.DateField()
     conterpartie = models.CharField(max_length=50)

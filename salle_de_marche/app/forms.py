@@ -14,3 +14,6 @@ class Bande_fluctuationForm(forms.ModelForm):
         
 class ExcelImportForm(forms.Form):
     fichier_excel = forms.FileField()
+
+class DateFilterForm(forms.Form):
+    date = forms.DateField(label='Filtrer par date', required=False)

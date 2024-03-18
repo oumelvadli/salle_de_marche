@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm
-from .form import CustomUerCreatinForm
+from .form import CustomUerCreationForm
 from django.contrib.auth import login,logout,authenticate
 from django.contrib import messages
 from app import views
@@ -10,12 +10,12 @@ from app import views
 
 def inscription(request):
     if request.method=='POST':
-        form=CustomUerCreatinForm(request.POST)
+        form=CustomUerCreationForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('connexion')
     else:
-        form=CustomUerCreatinForm()
+        form=CustomUerCreationForm()
     return render(request,'inscription.html',{'form':form})
 
 def connexion(request):
