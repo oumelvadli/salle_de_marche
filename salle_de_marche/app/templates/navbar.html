@@ -45,7 +45,7 @@
                 <div class="navbar-nav w-100">
                     <a href="{% url 'Accueil' %}" {% if navbar == "Accueil" %} class="nav-item nav-link active" {% endif %}  class="nav-item nav-link "><i class="fa-solid fa-house"></i>Accueil</a>
                     <a href="{% url 'MarketData' %}" {% if navbar == "MarketData" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Market Data</a>
-                    <a href="{% url 'importer_donnes' %}" {% if navbar == "importer_donnes" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-sharp fa-solid fa-download"></i>Import</a>
+                    <a href="{% url 'importer_donnes' %}" {% if navbar == "importer" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-sharp fa-solid fa-download"></i>Import</a>
                     <a href="{% url 'visualisation' %}" {% if navbar == "visualisation" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-eye"></i>Operations</a>
 
                 </div>

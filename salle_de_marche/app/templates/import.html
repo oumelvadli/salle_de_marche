@@ -38,40 +38,42 @@
 
 
                 <div class="m-n2" style="display: flex;justify-content: space-between;">
-                    <a href="#" class="btn btn-lg btn-primary m-2" id="openImportModal">Import</a>
+                    <!-- <a href="#" class="btn btn-lg btn-primary m-2" id="openImportModal">Import</a> -->
+                    <button class="btn btn-lg btn-primary m-2" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                        Import
+                    </button>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="import" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Importer un fichier excel</h4>
-                <button type="button" id="annuler"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="col-sm-12 col-xl-12">
-                    <div class="bg-light rounded h-100 p-4">
-                        <form action="{% url 'importer_donnes' %}" method="post" enctype="multipart/form-data"
-                            class="needs-validation" novalidate>
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="fileInput" class="form-label">Sélectionnez le fichier à importer :</label>
-                                <input class="form-control" type="file" id="fileInput" name="fichier_excel" required>
-                                <div class="invalid-feedback">Veuillez sélectionner un fichier.</div>
-                            </div>
-                            
-                            <button type="button" id="annuler" class="btn btn-lg btn-secondary m-2"
-                                data-dismiss="modal">Cancel</button>
-                            <input type="submit" class="btn btn-lg btn-success m-2" value="Importer">
-                        </form>
-                    </div>
+                <br>
+                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                    <div class="col-sm-12 col-xl-12">
+                        <h6 class="mb-4">Importer un fichier excel</h6>
+
+                            <form action="{% url 'importer_donnes' %}" method="post" enctype="multipart/form-data"
+                                class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="fileInput" class="form-label">Sélectionnez le fichier à importer :</label>
+                                    <input class="form-control" type="file" id="fileInput" name="fichier_excel" required>
+                                    <div class="invalid-feedback">Veuillez sélectionner un fichier.</div>
+                                </div>
+                                <input type="submit" class="btn btn-lg btn-success m-2" value="Importer">
+                            </form>
+                   </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
+
+
+<script>
+    // Ajoute un gestionnaire d'événements clic au lien d'importation
+    document.getElementById('openImportModal').addEventListener('click', function(event) {
+        event.preventDefault(); // Empêche le comportement par défaut du lien
+        // Ouvre la boîte de dialogue pour sélectionner un fichier
+        $('#import').modal('show');
+    });
+</script>
 {% endblock content %}

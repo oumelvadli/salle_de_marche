@@ -34,28 +34,6 @@
 </style>
 
 <h1>Liste des opérations</h1>
-<p>{{ date_str }}</p>
-<form action="" method="GET">
-    <label for="date">Filtrer par date :</label>
-    <input type="date" id="date" name="date" value="{{ request.GET.date }}">
-    <button type="submit">Filtrer</button>
-</form>
-
-
-<form action="{% url 'filtrer' %}" method="get" enctype="multipart/form-data"
-                            class="needs-validation" novalidate>
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="fileInput" class="form-label">Sélectionnez le fichier à importer :</label>
-                                <input class="form-control" type="date" id="fileInput" name="DateFilterForm" required>
-                                <div class="invalid-feedback">Veuillez sélectionner un fichier.</div>
-                            </div>
-                            
-                            <button type="button" id="annuler" class="btn btn-lg btn-secondary m-2"
-                                data-dismiss="modal">Cancel</button>
-                            <input type="submit" class="btn btn-lg btn-success m-2" value="filtrer">
-                        </form>
-
 
 
 <div class="container-fluid pt-4 px-4">
