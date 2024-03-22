@@ -25,7 +25,10 @@ class Operation(models.Model):
     devise_vente = models.CharField(max_length=5)
     cours = models.DecimalField(max_digits=5, decimal_places=2)
     montant_achat = models.DecimalField(max_digits=20, decimal_places=2)
+    montant_vendu = models.DecimalField(max_digits=20, decimal_places=2)
     type = models.CharField(max_length=20)
+    direction = models.CharField(max_length=10, blank=False,default='None')
+    
 
 
 

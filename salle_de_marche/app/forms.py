@@ -17,3 +17,8 @@ class ExcelImportForm(forms.Form):
 
 class DateFilterForm(forms.Form):
     date = forms.DateField(label='Filtrer par date', required=False)
+
+class OperationForm(forms.ModelForm):
+    class Meta:
+        model = Operation
+        fields = '__all__'

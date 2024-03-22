@@ -1,0 +1,57 @@
+<!-- calcul.html -->
+{% extends 'navbar.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                
+                <div class="table-responsive">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{% url 'meilleures_contreparties'%}" class="btn btn-primary btn-sm"> Mailleures Conterparties </a></button>
+
+                    <a href="{% url 'export_to_excel'%}" class="btn btn-primary btn-sm"> Edition xlsx</a></button></div>
+                    <table>
+                        <tr>
+                            <th>Devise</th>
+                            <th>Tot.Achat</th>
+                            <th>Tot.Vente</th>
+                            <th>PMPA</th>
+                            <th>PMPV</th>
+                        </tr>
+                        {% for item in prix_achat_total %}
+                        <tr>
+                            <td>{{ item.devise_achat }}</td>
+                            <td>{{ item.prix_achat_total |floatformat:"2"}}</td>
+                            <td>
+                                {% for vente_item in prix_vente_total %}
+                                    {% if vente_item.devise_vente == item.devise_achat %}
+                                        {{ vente_item.prix_vente_total|floatformat:"2" }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for moyen_achat_item in prix_moyen_achat %}
+                                    {% if moyen_achat_item.devise_achat == item.devise_achat %}
+                                        {{ moyen_achat_item.prix_moyen_achat |floatformat:"2" }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for moyen_vente_item in prix_moyen_vente %}
+                                    {% if moyen_vente_item.devise_vente == item.devise_achat %}
+                                        {{ moyen_vente_item.prix_moyen_vente|floatformat:"2" }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

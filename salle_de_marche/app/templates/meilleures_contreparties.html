@@ -1,0 +1,24 @@
+<!-- calcul.html -->
+
+{% extends 'navbar.html' %}
+{% block content %}
+<div class="container">
+
+    <table >
+        <thead>
+            <tr>
+                <th scope="col">Contrepartie</th>
+                <th scope="col">Montant total des ventes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in meilleures_contreparties %}
+            <tr>
+                <td>{{ item.conterpartie }}</td>
+                <td>{{ item.total_ventes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -16,6 +16,9 @@
 
     <!-- Feuille de styles des bibliothèques -->
     <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet" />
 
     <!-- Feuille de styles personnalisée Bootstrap -->
@@ -47,6 +50,7 @@
                     <a href="{% url 'MarketData' %}" {% if navbar == "MarketData" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Market Data</a>
                     <a href="{% url 'importer_donnes' %}" {% if navbar == "importer" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-sharp fa-solid fa-download"></i>Import</a>
                     <a href="{% url 'visualisation' %}" {% if navbar == "visualisation" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-eye"></i>Operations</a>
+                    <a href="{% url 'calcul' %}" {% if navbar == "calcul" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-chart-simple"></i>Reporting</a>
 
                 </div>
             </nav>

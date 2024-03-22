@@ -116,3 +116,23 @@ document.getElementById('editbandeDate').addEventListener('change', function(){
       document.getElementById('editDateErrorBande').textContent = "";
   }
 });
+
+
+document.getElementById("import_btn").addEventListener("click", function (event) {
+    console.log("Bouton d'importation cliqué !");
+    event.preventDefault();
+
+    // Vérification de l'extension de fichier
+    var fileInput = document.getElementById("fileInput");
+    var fileName = fileInput.value;
+    console.log(fileName); // Débogage de la valeur de fileName
+
+    // Vérifiez si le fichier a l'extension .xlsx
+    if (!fileName.endsWith(".xlsx")) {
+        alert("Le fichier doit être au format Excel (.xlsx)");
+        return;
+    }
+
+    
+    alert("importer avec succes");
+});

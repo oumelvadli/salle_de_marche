@@ -1,93 +1,56 @@
 {% extends 'navbar.html' %}
-
 {% load static %}
 
 {% block content %}
-<style>
-    .table-container {
-        margin: auto;
-    }
 
-    table {
-        width: 80%;
-        border-collapse: collapse;
-    }
 
-    th,
-    td {
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-    }
-
-    th {
-        background-color: #f2f2f2;
-    }
-
-    tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-
-    tr:hover {
-        background-color: #009CFF;
-    }
-</style>
-
-<h1>Liste des opérations</h1>
-
+<!-- <h1 style="text-align: center; ">Liste des opérations</h1> -->
 
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
         <div class="col-sm-12 col-xl-12">
             <div class="bg-light rounded h-100 p-4">
-                <h2>Données importées</h2>
+                
                 <div class="table-responsive">
                     <table>
                         <tr>
-                            <th>date_operation</th>
-                            <th>date_validation</th>
-                            <th>conterpartie</th>
-                            <th>devise_achat</th>
-                            <th>devise_vente</th>
-                            <th>cours</th>
-                            <th>montant_achat</th>
-                            <th>type</th>
+                            <th>Date operation</th>
+                            <th>Date validation</th>
+                            <th>Conterpartie</th>
+                            <th>Direction</th>
+                            <th>Devise achat</th>
+                            <th>Devise vente</th>
+                            <th>Cours</th>
+                            <th>Montant achat</th>
+                            <th>Montant vendu</th>
+                            <th>Type</th>
+                            <th>Action</th>
                         </tr>
-                        {% if request.GET.date %}
-                            {% for operation in operations %}
-                                <tr>
-                                    <td>{{ operation.date_operation | date:"Y-m-d" }}</td>
-                                    <td>{{ operation.date_validation| date:"Y-m-d" }}</td>
-                                    <td>{{ operation.conterpartie }}</td>
-                                    <td>{{ operation.devise_achat }}</td>
-                                    <td>{{ operation.devise_vente}}</td>
-                                    <td>{{ operation.date_cours }}</td>
-                                    <td>{{ operation.montant_achat }}</td>
-                                    <td>{{ operation.type }}</td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="8">Aucune opération trouvée pour cette date.</td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            {% for operation in operations %}
-                                <tr>
-                                    <td>{{ operation.date_operation | date:"Y-m-d" }}</td>
-                                    <td>{{ operation.date_validation| date:"Y-m-d" }}</td>
-                                    <td>{{ operation.conterpartie }}</td>
-                                    <td>{{ operation.devise_achat }}</td>
-                                    <td>{{ operation.devise_vente}}</td>
-                                    <td>{{ operation.date_cours }}</td>
-                                    <td>{{ operation.montant_achat }}</td>
-                                    <td>{{ operation.type }}</td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="8">Aucune opération trouvée.</td>
-                                </tr>
-                            {% endfor %}
-                        {% endif %}
+                        {% for operation in operations %}
+                        <tr>
+                            <td>{{ operation.date_operation | date:"Y/m/d" }}</td>
+                            <td>{{ operation.date_validation| date:"Y/m/d" }}</td>
+                            <td>{{ operation.conterpartie }}</td>
+                            <td>{{ operation.direction }}</td>
+                            <td>{{ operation.devise_achat }}</td>
+                            <td>{{ operation.devise_vente}}</td>
+                            <td>{{ operation.cours }}</td>
+                            <td>{{ operation.montant_achat }}</td>
+                            <td>{{ operation.montant_vendu }}</td>
+                            <td>{{ operation.type }}</td>
+                            <td>
+                                <div class="btn-group" role="group" aria-label="Actions">
+                                    <a href="{% url 'update_operation' operation.id %}" class="btn btn-primary btn-sm">Modifier</a>
+                                    <a href="{% url 'delete_operation' operation.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        {% empty %}
+                        <tr>
+                            <td colspan="11">Aucune opération trouvée pour cette date.</td>
+                        </tr>
+                        {% endfor %}
                     </table>
                 </div>
             </div>
