@@ -18,6 +18,7 @@ urlpatterns = [
     path('position/',views.calcul_position,name="calcul"),
     path('meilleures_contreparties/',views.meilleures_contreparties,name="meilleures_contreparties"),
     path('export_to_excel/',views.export_to_excel,name="export_to_excel"),
+    path('filter_operations/',views.filter_operations,name="filter_operations"),
 
 
 

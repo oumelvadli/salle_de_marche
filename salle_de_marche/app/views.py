@@ -8,11 +8,16 @@ import pandas as pd
 from datetime import datetime
 from django.db.models import Q
 import math 
-from decimal import Decimal
+from django.contrib.auth.decorators import login_required
 
+from decimal import Decimal
+from django.core.paginator import Paginator
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from django.http import HttpResponse
 from openpyxl import Workbook
 
+
+@login_required
 def Accueil(request):
     return render(request,"Accueil.html",{'navbar':'Accueil'})
 
@@ -113,9 +118,13 @@ def importer_donnees(request):
 
 
 def visualisation(request):
-    operations = Operation.objects.all()
-    return render(request, 'visualiser.html', {'operations': operations,'navbar':'visualisation'})
-from django.db.models import Sum, F, ExpressionWrapper, DecimalField
+    operations_list = Operation.objects.all()
+    paginator =Paginator(operations_list, 15)
+    
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation'})
+
 
      
 def update_operation(request, id):
@@ -138,8 +147,11 @@ def delete_operation(request, id):
 
 def calcul_position(request):
     # Calcul du prix total d'achat et de vente pour chaque devise
-    prix_achat_total = Operation.objects.values('devise_achat').annotate(prix_achat_total=Sum(F('montant_achat')))
+    prix_achat_total =Operation.objects.exclude(devise_achat='MRU').values('devise_achat').annotate(prix_achat_total=Sum(F('montant_achat')))
     prix_vente_total = Operation.objects.values('devise_vente').annotate(prix_vente_total=Sum(F('montant_vendu')))
+    cv_achat=Operation.objects.values('devise_achat').annotate(cv_achat=Sum(F('montant_achat')*F('cours')))
+    cv_vente=Operation.objects.values('devise_vente').annotate(cv_achat=Sum(F('montant_vendu')*F('cours')))
+    print(cv_vente)
 
     # Calcul du prix moyen pondéré d'achat et de vente pour chaque devise
     prix_moyen_achat = Operation.objects.values('devise_achat').annotate(
@@ -157,6 +169,8 @@ def calcul_position(request):
         'prix_vente_total': prix_vente_total,
         'prix_moyen_achat': prix_moyen_achat,
         'prix_moyen_vente': prix_moyen_vente,
+        'cv_achat':cv_achat,
+        'cv_vente':cv_vente,
     }
 
     return render(request, 'calcul.html', context)
@@ -214,3 +228,20 @@ def export_to_excel(request):
     wb.save(response)
 
     return response
+
+def filter_operations(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    start_date = datetime.strptime(start_date, "%Y/%m/%d").strftime("%Y-%m-%d") if start_date else None
+    end_date = datetime.strptime(end_date, "%Y/%m/%d").strftime("%Y-%m-%d") if end_date else None
+    
+    operations_list = Operation.objects.all()
+    
+    if start_date and end_date:
+        operations_list = operations_list.filter(date_operation__range=[start_date, end_date])
+    
+    paginator = Paginator(operations_list, 10) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'visualiser.html', {'page_obj': page_obj})

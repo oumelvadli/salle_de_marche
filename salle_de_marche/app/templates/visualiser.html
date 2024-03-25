@@ -1,5 +1,6 @@
 {% extends 'navbar.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 
@@ -10,6 +11,20 @@
     <div class="row g-4">
         <div class="col-sm-12 col-xl-12">
             <div class="bg-light rounded h-100 p-4">
+                <form method="GET" action="{% url 'filter_operations' %}" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="start_date" class="form-label">Date de début:</label>
+                        <input type="" class="form-control" id="start_date" name="start_date" >
+                    </div>
+                    <div class="col-md-4">
+                        <label for="end_date" class="form-label">Date de fin:</label>
+                        <input type="" class="form-control" id="end_date" name="end_date" >
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filtrer</button>
+                    </div>
+                </form>
+                
                 
                 <div class="table-responsive">
                     <table>
@@ -26,7 +41,7 @@
                             <th>Type</th>
                             <th>Action</th>
                         </tr>
-                        {% for operation in operations %}
+                        {% for operation in page_obj %}
                         <tr>
                             <td>{{ operation.date_operation | date:"Y/m/d" }}</td>
                             <td>{{ operation.date_validation| date:"Y/m/d" }}</td>
@@ -35,8 +50,8 @@
                             <td>{{ operation.devise_achat }}</td>
                             <td>{{ operation.devise_vente}}</td>
                             <td>{{ operation.cours }}</td>
-                            <td>{{ operation.montant_achat }}</td>
-                            <td>{{ operation.montant_vendu }}</td>
+                            <td>{{ operation.montant_achat | intcomma }}</td>
+                            <td>{{ operation.montant_vendu | intcomma}}</td>
                             <td>{{ operation.type }}</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Actions">
@@ -52,8 +67,38 @@
                         </tr>
                         {% endfor %}
                     </table>
+                    
                 </div>
+                <div class="container">
+                <div class="row">
+                    <div class="col-md-4 offset-md-8">
+                        <nav aria-label="...">
+                            <ul class="pagination">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédente</a>
+                                    </li>
+                                {% endif %}
+                                {% for num in page_obj.paginator.page_range %}
+                                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endfor %}
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivante</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                          </nav>
+
+                    </div>
+
+
+                </div></div>
+               
             </div>
+            
         </div>
     </div>
 </div>

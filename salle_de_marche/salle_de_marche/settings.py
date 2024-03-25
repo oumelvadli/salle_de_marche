@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'auth_app',
+    'django.contrib.humanize',
 ]
 
 LOGIN_URL='connexion'
