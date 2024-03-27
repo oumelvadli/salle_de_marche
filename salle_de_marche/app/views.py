@@ -1,11 +1,13 @@
 import datetime
+from datetime import datetime
+
 from django.shortcuts import render,redirect
 from .models import *
 from .forms import *
 from .forms import ExcelImportForm
 from django.contrib import messages
 import pandas as pd 
-from datetime import datetime
+from django.db.models import Sum
 from django.db.models import Q
 import math 
 from django.contrib.auth.decorators import login_required
@@ -86,24 +88,22 @@ def update_bande(request, id):
 
 def convertir_en_decimal(valeur):
     return Decimal(str(valeur).replace(',', ''))
-
+@login_required
 def importer_donnees(request):
     if request.method == 'POST':
         form = ExcelImportForm(request.POST, request.FILES)
         if form.is_valid():
             fichier_excel = request.FILES['fichier_excel']
             if fichier_excel.name.endswith('.xlsx'):
-                data = pd.read_excel(fichier_excel, converters={'montant_vendu': convertir_en_decimal, 'montant_achat': convertir_en_decimal})
+                data = pd.read_excel(fichier_excel, converters={'date_operation': lambda x: datetime.strptime(x, '%d/%m/%Y').date(),
+                'date_validation': lambda x: datetime.strptime(x, '%d/%m/%Y').date(),'montant_vendu': convertir_en_decimal, 'montant_achat': convertir_en_decimal})
                 imported_operations = 0  # Compteur d'opérations importées
-              
-                for index, row in data.iterrows():
-
-                    operation_exists = Operation.objects.filter(
+                
+                for index, row in data.iterrows():  
+                     operation_exists = Operation.objects.filter(
                         Q(date_operation=row['date_operation']) &Q(date_validation=row['date_validation']) &Q(montant_vendu=row['montant_vendu']) &Q(conterpartie=row['conterpartie']) &Q(direction=row['direction']) & Q(devise_achat=row['devise_achat']) &Q(devise_vente=row['devise_vente']) &Q(cours=row['cours']) &Q(montant_achat=row['montant_achat']) &Q(type=row['type'])).exists()
 
-                    if not operation_exists:
-                        
-
+                     if not operation_exists:
                         Operation.objects.create( date_operation=row['date_operation'],date_validation=row['date_validation'],conterpartie=row['conterpartie'],direction=row['direction'],devise_achat=row['devise_achat'],devise_vente=row['devise_vente'],cours=row['cours'], montant_achat=row['montant_achat'],montant_vendu=row['montant_vendu'],type=row['type']
                         )
                         imported_operations += 1
@@ -112,20 +112,18 @@ def importer_donnees(request):
             else:
                 # Fichier non pris en charge
                 messages.error(request, 'Le fichier doit être au format Excel (.xlsx)')
+               
     else:
         form = ExcelImportForm()
     return render(request, 'import.html', {'form': form})
 
-
+@login_required
 def visualisation(request):
     operations_list = Operation.objects.all()
     paginator =Paginator(operations_list, 15)
-    
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation'})
-
-
      
 def update_operation(request, id):
     operation = Operation.objects.get(id=id)
@@ -144,22 +142,29 @@ def delete_operation(request, id):
         operation.delete()
         return redirect('visualisation')  
     return render(request, 'delete_operation.html', {'operation': operation})
-
+@login_required
 def calcul_position(request):
-    # Calcul du prix total d'achat et de vente pour chaque devise
-    prix_achat_total =Operation.objects.exclude(devise_achat='MRU').values('devise_achat').annotate(prix_achat_total=Sum(F('montant_achat')))
-    prix_vente_total = Operation.objects.values('devise_vente').annotate(prix_vente_total=Sum(F('montant_vendu')))
-    cv_achat=Operation.objects.values('devise_achat').annotate(cv_achat=Sum(F('montant_achat')*F('cours')))
-    cv_vente=Operation.objects.values('devise_vente').annotate(cv_achat=Sum(F('montant_vendu')*F('cours')))
-    print(cv_vente)
+    date_specifiee = request.GET.get('date_operation')
+    if date_specifiee:
+            date_specifiee = datetime.strptime(date_specifiee, '%d/%m/%Y').date()
+    else:
+        date_specifiee = datetime.now().date()
 
-    # Calcul du prix moyen pondéré d'achat et de vente pour chaque devise
-    prix_moyen_achat = Operation.objects.values('devise_achat').annotate(
+    operations = Operation.objects.filter(date_operation=date_specifiee)
+
+    # Calcul du prix total d'achat et de vente pour chaque devise pour la date spécifiée
+    prix_achat_total = operations.exclude(devise_achat='MRU').values('devise_achat').annotate(prix_achat_total=Sum(F('montant_achat')))
+    prix_vente_total = operations.values('devise_vente').annotate(prix_vente_total=Sum(F('montant_vendu')))
+    cv_achat = operations.values('devise_achat').annotate(cv_achat=Sum(F('montant_achat')*F('cours')))
+    cv_vente = operations.values('devise_vente').annotate(cv_achat=Sum(F('montant_vendu')*F('cours')))
+    
+    # Calcul du prix moyen pondéré d'achat et de vente pour chaque devise pour la date spécifiée
+    prix_moyen_achat = operations.values('devise_achat').annotate(
         prix_achat_total=Sum(F('montant_achat') * F('cours')),
         quantite_achat_total=Sum('montant_achat')
     ).annotate(prix_moyen_achat=ExpressionWrapper(F('prix_achat_total') / F('quantite_achat_total'), output_field=DecimalField()))
 
-    prix_moyen_vente = Operation.objects.values('devise_vente').annotate(
+    prix_moyen_vente = operations.values('devise_vente').annotate(
         prix_vente_total=Sum(F('montant_vendu') * F('cours')),
         quantite_vente_total=Sum('montant_vendu')
     ).annotate(prix_moyen_vente=ExpressionWrapper(F('prix_vente_total') / F('quantite_vente_total'), output_field=DecimalField()))
@@ -169,31 +174,21 @@ def calcul_position(request):
         'prix_vente_total': prix_vente_total,
         'prix_moyen_achat': prix_moyen_achat,
         'prix_moyen_vente': prix_moyen_vente,
-        'cv_achat':cv_achat,
-        'cv_vente':cv_vente,
+        'cv_achat': cv_achat,
+        'cv_vente': cv_vente,
+        'date_specifiee': date_specifiee,
     }
-
     return render(request, 'calcul.html', context)
 
-from django.db.models import Sum
-
 def meilleures_contreparties(request):
-    # Filtrer les opérations avec la direction "sell"
     operations_sell = Operation.objects.filter(direction='sell')
-
-    # Calculer le total des ventes pour chaque contrepartie
     ventes_par_contrepartie = operations_sell.values('conterpartie').annotate(total_ventes=Sum('montant_vendu'))
-
-    # Trier les résultats par total des ventes (en ordre décroissant)
     ventes_par_contrepartie = ventes_par_contrepartie.order_by('-total_ventes')
-
-    # Prendre les 5 premiers résultats
     meilleures_contreparties = ventes_par_contrepartie[:5]
 
     context = {
         'meilleures_contreparties': meilleures_contreparties
     }
-
     return render(request, 'meilleures_contreparties.html', context)
 
 
@@ -232,8 +227,8 @@ def export_to_excel(request):
 def filter_operations(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
-    start_date = datetime.strptime(start_date, "%Y/%m/%d").strftime("%Y-%m-%d") if start_date else None
-    end_date = datetime.strptime(end_date, "%Y/%m/%d").strftime("%Y-%m-%d") if end_date else None
+    start_date = datetime.strptime(start_date, "%d/%m/%Y").strftime("%Y-%m-%d") if start_date else None
+    end_date = datetime.strptime(end_date, "%d/%m/%Y").strftime("%Y-%m-%d") if end_date else None
     
     operations_list = Operation.objects.all()
     

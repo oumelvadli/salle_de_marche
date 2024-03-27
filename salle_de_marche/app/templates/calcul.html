@@ -9,12 +9,16 @@
     <div class="row g-4">
         <div class="col-sm-12 col-xl-12">
             <div class="bg-light rounded h-100 p-4">
-                
+                <form class="row g-3" id="dateForm" method="get" action="{% url 'calcul' %}">
+                    <div class="col-auto">
+                      <input type="text" class="form-control" id="date_operation" name="date_operation" placeholder="Date">
+                      <span id="dateError" class="text-danger"></span> 
+                    </div>
+                    <div class="col-auto">
+                      <button type="submit" class="btn btn-primary mb-3">Valider</button>
+                    </div>
                 <div class="table-responsive">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a href="{% url 'meilleures_contreparties'%}" class="btn btn-primary btn-sm"> Mailleures Conterparties </a></button>
-
-                    <a href="{% url 'export_to_excel'%}" class="btn btn-primary btn-sm"> Edition xlsx</a></button></div>
+                    
                     <table>
                         <tr>
                             <th>Devise</th>
@@ -64,6 +68,7 @@
                                     {% endif %}
                                 {% endfor %}
                             </td>
+                            
                         
                                 
                             
@@ -74,9 +79,26 @@
                         </tr>
                         {% endfor %}
                     </table>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'meilleures_contreparties'%}" class="btn btn-primary btn-sm me-md-2">Meilleures Contreparties</a>
+                        <a href="{% url 'export_to_excel'%}" class="btn btn-primary btn-sm">Edition xlsx</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+document.getElementById("dateForm").onsubmit = function() {
+    var dateInput = document.getElementById("date_operation").value;
+    var isValidDate = /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput);
+    if (!isValidDate) {
+        document.getElementById("dateError").innerText = "Format de date incorrect. Utilisez le format DD/MM/YYYY.";
+        return false; // Empêche la soumission du formulaire si la date n'est pas valide
+    }
+    else {
+        document.getElementById("dateError").innerText = ""; // Efface le message d'erreur s'il y en a un
+    }
+};
+</script>
 {% endblock %}

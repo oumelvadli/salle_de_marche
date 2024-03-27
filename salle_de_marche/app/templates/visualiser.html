@@ -43,8 +43,8 @@
                         </tr>
                         {% for operation in page_obj %}
                         <tr>
-                            <td>{{ operation.date_operation | date:"Y/m/d" }}</td>
-                            <td>{{ operation.date_validation| date:"Y/m/d" }}</td>
+                            <td>{{ operation.date_operation | date:"d/m/Y" }}</td>
+                            <td>{{ operation.date_validation| date:"d/m/Y" }}</td>
                             <td>{{ operation.conterpartie }}</td>
                             <td>{{ operation.direction }}</td>
                             <td>{{ operation.devise_achat }}</td>

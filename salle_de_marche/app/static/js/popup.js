@@ -136,3 +136,12 @@ document.getElementById("import_btn").addEventListener("click", function (event)
     
     alert("importer avec succes");
 });
+
+    document.getElementById("dateForm").onsubmit = function() {
+        var dateInput = document.getElementById("date_operation").value;
+        var isValidDate = /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput);
+        if (!isValidDate) {
+            alert("Format de date incorrect. Utilisez le format YYYY-MM-DD.");
+            return false; // Empêche la soumission du formulaire si la date n'est pas valide
+        }
+    };
