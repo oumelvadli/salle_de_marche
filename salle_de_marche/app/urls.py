@@ -15,10 +15,15 @@ urlpatterns = [
     path('visualisation/',views.visualisation,name="visualisation"),
     path('operation/<int:id>/update/',views.update_operation,name="update_operation"),
     path('operation/<int:id>/delet/',views.delete_operation,name="delete_operation"),
+    path('addoperation/',views.add_operation,name="add_operation"),
+
     path('position/',views.calcul_position,name="calcul"),
     path('meilleures_contreparties/',views.meilleures_contreparties,name="meilleures_contreparties"),
-    path('export_to_excel/',views.export_to_excel,name="export_to_excel"),
     path('filter_operations/',views.filter_operations,name="filter_operations"),
+    path('EoD/', views.EoD, name='EoD'),
+    path('export_to_excel/', views.export_to_excel, name='export_to_excel'),
+
+
 
 
 

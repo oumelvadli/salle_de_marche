@@ -118,30 +118,3 @@ document.getElementById('editbandeDate').addEventListener('change', function(){
 });
 
 
-document.getElementById("import_btn").addEventListener("click", function (event) {
-    console.log("Bouton d'importation cliqué !");
-    event.preventDefault();
-
-    // Vérification de l'extension de fichier
-    var fileInput = document.getElementById("fileInput");
-    var fileName = fileInput.value;
-    console.log(fileName); // Débogage de la valeur de fileName
-
-    // Vérifiez si le fichier a l'extension .xlsx
-    if (!fileName.endsWith(".xlsx")) {
-        alert("Le fichier doit être au format Excel (.xlsx)");
-        return;
-    }
-
-    
-    alert("importer avec succes");
-});
-
-    document.getElementById("dateForm").onsubmit = function() {
-        var dateInput = document.getElementById("date_operation").value;
-        var isValidDate = /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput);
-        if (!isValidDate) {
-            alert("Format de date incorrect. Utilisez le format YYYY-MM-DD.");
-            return false; // Empêche la soumission du formulaire si la date n'est pas valide
-        }
-    };

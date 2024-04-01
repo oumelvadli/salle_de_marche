@@ -27,7 +27,7 @@
                             <th>PMPA</th>
                             <th>PMPV</th>
                             <th>C/V Achat</th>
-                            <th>C/V Vente</th>
+                            <!-- <th>C/V Vente</th> -->
                         </tr>
                         {% for item in prix_achat_total %}
                         <tr>
@@ -61,13 +61,13 @@
                                     {% endif %}
                                 {% endfor %}
                             </td>
-                            <td>
+                            <!-- <td>
                                 {% for cv_item in cv_vente %}
-                                    {% if cv_item.devise_vente == item.devise_vente %}
-                                        {{ cv_item.cv_vente | floatformat:"2" | intcomma }}
+                                    {% if cv_item.devise_vente == item.devise_achat %}
+                                        {{ cv_item.cv_vente |floatformat:"2" | intcomma }}
                                     {% endif %}
                                 {% endfor %}
-                            </td>
+                            </td> -->
                             
                         
                                 
@@ -94,10 +94,10 @@ document.getElementById("dateForm").onsubmit = function() {
     var isValidDate = /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput);
     if (!isValidDate) {
         document.getElementById("dateError").innerText = "Format de date incorrect. Utilisez le format DD/MM/YYYY.";
-        return false; // Empêche la soumission du formulaire si la date n'est pas valide
+        return false; 
     }
     else {
-        document.getElementById("dateError").innerText = ""; // Efface le message d'erreur s'il y en a un
+        document.getElementById("dateError").innerText = ""; 
     }
 };
 </script>

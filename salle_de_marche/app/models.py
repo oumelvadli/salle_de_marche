@@ -30,5 +30,9 @@ class Operation(models.Model):
     direction = models.CharField(max_length=10, blank=False,default='None')
     
 
+class Journee(models.Model):
+    date_overture = models.DateField(unique=True)
+    date_fermeture = models.DateTimeField(null=True, blank=True)
+    est_ouvert = models.BooleanField(default=False)
 
 

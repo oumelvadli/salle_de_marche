@@ -11,14 +11,19 @@
     <div class="row g-4">
         <div class="col-sm-12 col-xl-12">
             <div class="bg-light rounded h-100 p-4">
-                <form method="GET" action="{% url 'filter_operations' %}" class="row g-3">
+                <form method="GET" id="dateForm" action="{% url 'filter_operations' %}" class="row g-3">
                     <div class="col-md-4">
                         <label for="start_date" class="form-label">Date de début:</label>
-                        <input type="" class="form-control" id="start_date" name="start_date" >
+                        <input type="" class="form-control" id="start_date" name="start_date"  >
+                        <div id="startDateError" class="text-danger"></div>
+
+
                     </div>
                     <div class="col-md-4">
                         <label for="end_date" class="form-label">Date de fin:</label>
                         <input type="" class="form-control" id="end_date" name="end_date" >
+                        <div id="endDateError" class="text-danger"></div>
+
                     </div>
                     <div class="col-md-4 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary">Filtrer</button>
@@ -27,6 +32,12 @@
                 
                 
                 <div class="table-responsive">
+                    
+                    <div class="col-12 text-end">
+                        <a class="btn btn-primary btn-sm" href="{% url 'export_to_excel' %}">Edition XLSX</a>
+                        <a class="btn btn-primary btn-sm" href="{% url 'add_operation' %}">Ajoteur un operation</a>
+                    </div>
+                    
                     <table>
                         <tr>
                             <th>Date operation</th>
@@ -102,4 +113,29 @@
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById("dateForm").onsubmit = function() {
+    var startDateInput = document.getElementById("start_date").value;
+    var endDateInput = document.getElementById("end_date").value;
+
+    var isValidStartDate = /^\d{2}\/\d{2}\/\d{4}$/.test(startDateInput);
+    var isValidEndDate = /^\d{2}\/\d{2}\/\d{4}$/.test(endDateInput);
+
+    if (!isValidStartDate) {
+        document.getElementById("startDateError").innerText = "Format de date incorrect. Utilisez le format DD/MM/YYYY.";
+        return false;
+    } else {
+        document.getElementById("startDateError").innerText = "";
+    }
+
+    if (!isValidEndDate) {
+        document.getElementById("endDateError").innerText = "Format de date incorrect. Utilisez le format DD/MM/YYYY.";
+        return false;
+    } else {
+        document.getElementById("endDateError").innerText = ""; 
+    }
+};
+</script>
+
 {% endblock %}

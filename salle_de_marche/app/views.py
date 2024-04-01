@@ -11,17 +11,21 @@ from django.db.models import Sum
 from django.db.models import Q
 import math 
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 from decimal import Decimal
 from django.core.paginator import Paginator
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from openpyxl import Workbook
 
 
 @login_required
 def Accueil(request):
     return render(request,"Accueil.html",{'navbar':'Accueil'})
+
+def EoD(request):
+    return render(request,"EoD.html",{'navbar':'EoD'})
 
 def MarketData(request):
     Cours_revaluations = Cours_revaluation.objects.all().order_by('-date')
@@ -94,12 +98,11 @@ def importer_donnees(request):
         form = ExcelImportForm(request.POST, request.FILES)
         if form.is_valid():
             fichier_excel = request.FILES['fichier_excel']
-            if fichier_excel.name.endswith('.xlsx'):
-                data = pd.read_excel(fichier_excel, converters={'date_operation': lambda x: datetime.strptime(x, '%d/%m/%Y').date(),
+            data = pd.read_excel(fichier_excel, converters={'date_operation': lambda x: datetime.strptime(x, '%d/%m/%Y').date(),
                 'date_validation': lambda x: datetime.strptime(x, '%d/%m/%Y').date(),'montant_vendu': convertir_en_decimal, 'montant_achat': convertir_en_decimal})
-                imported_operations = 0  # Compteur d'opérations importées
+            imported_operations = 0  # Compteur d'opérations importées
                 
-                for index, row in data.iterrows():  
+            for index, row in data.iterrows():  
                      operation_exists = Operation.objects.filter(
                         Q(date_operation=row['date_operation']) &Q(date_validation=row['date_validation']) &Q(montant_vendu=row['montant_vendu']) &Q(conterpartie=row['conterpartie']) &Q(direction=row['direction']) & Q(devise_achat=row['devise_achat']) &Q(devise_vente=row['devise_vente']) &Q(cours=row['cours']) &Q(montant_achat=row['montant_achat']) &Q(type=row['type'])).exists()
 
@@ -107,11 +110,10 @@ def importer_donnees(request):
                         Operation.objects.create( date_operation=row['date_operation'],date_validation=row['date_validation'],conterpartie=row['conterpartie'],direction=row['direction'],devise_achat=row['devise_achat'],devise_vente=row['devise_vente'],cours=row['cours'], montant_achat=row['montant_achat'],montant_vendu=row['montant_vendu'],type=row['type']
                         )
                         imported_operations += 1
+            # return JsonResponse({'success': True, 'nombre_lignes_importees': imported_operations})
 
-                messages.success(request, f"{imported_operations} opérations ont été importées avec succès.")
-            else:
-                # Fichier non pris en charge
-                messages.error(request, 'Le fichier doit être au format Excel (.xlsx)')
+            messages.success(request, f"{imported_operations} opérations ont été importées avec succès.")
+                
                
     else:
         form = ExcelImportForm()
@@ -125,6 +127,18 @@ def visualisation(request):
     page_obj = paginator.get_page(page_number)
     return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation'})
      
+def add_operation(request):
+    if request.method == "POST":
+        form = OperationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # messages.success(request,"L'operation  a été ajouté avec succès")
+        return redirect('visualisation')
+    else:
+        form = OperationForm()
+    return render(request, 'operation_form.html', {'form': form})
+
+
 def update_operation(request, id):
     operation = Operation.objects.get(id=id)
     if request.method == 'POST':
@@ -157,6 +171,10 @@ def calcul_position(request):
     prix_vente_total = operations.values('devise_vente').annotate(prix_vente_total=Sum(F('montant_vendu')))
     cv_achat = operations.values('devise_achat').annotate(cv_achat=Sum(F('montant_achat')*F('cours')))
     cv_vente = operations.values('devise_vente').annotate(cv_achat=Sum(F('montant_vendu')*F('cours')))
+    print(cv_vente)
+    print(cv_achat)
+
+
     
     # Calcul du prix moyen pondéré d'achat et de vente pour chaque devise pour la date spécifiée
     prix_moyen_achat = operations.values('devise_achat').annotate(
@@ -191,39 +209,6 @@ def meilleures_contreparties(request):
     }
     return render(request, 'meilleures_contreparties.html', context)
 
-
-
-def export_to_excel(request):
-
-    # Récupérer les données calculées
-    data = calcul_position()
-
-    # Créer un nouveau classeur Excel
-    wb = Workbook()
-    ws = wb.active
-
-    # Ajouter les en-têtes de colonnes
-    ws.append(['Devise', 'Prix total d\'achat', 'Prix total de vente', 'Prix moyen pondéré d\'achat', 'Prix moyen pondéré de vente'])
-
-    # Ajouter les données calculées
-    for item in data['prix_achat_total']:
-        devise_achat = item['devise_achat']
-        prix_total_achat = item['prix_achat_total']
-        prix_total_vente = next((vente['prix_vente_total'] for vente in data['prix_vente_total'] if vente['devise_vente'] == devise_achat), None)
-        prix_moyen_achat_item = next((achat['prix_moyen_achat'] for achat in data['prix_moyen_achat'] if achat['devise_achat'] == devise_achat), None)
-        prix_moyen_vente_item = next((vente['prix_moyen_vente'] for vente in data['prix_moyen_vente'] if vente['devise_vente'] == devise_achat), None)
-
-        ws.append([devise_achat, prix_total_achat, prix_total_vente, prix_moyen_achat_item, prix_moyen_vente_item])
-
-    # Créer une réponse HTTP avec le contenu Excel
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=reporting.xlsx'
-
-    # Écrire le contenu du classeur Excel dans la réponse HTTP
-    wb.save(response)
-
-    return response
-
 def filter_operations(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -240,3 +225,19 @@ def filter_operations(request):
     page_obj = paginator.get_page(page_number)
     
     return render(request, 'visualiser.html', {'page_obj': page_obj})
+
+
+def export_to_excel(request):
+    data = Operation.objects.all()
+    wb = Workbook()
+    ws = wb.active
+
+    ws.append(['Date op', 'Date va', 'Conterpartie','Direction','Devise Achat','Devise vente','cours','Montant Achat','Montant vendu','Type'])
+
+
+    for operation in data:
+        ws.append([operation.date_operation, operation.date_validation,operation.conterpartie,operation.direction,operation.devise_achat,operation.devise_vente,operation.cours,operation.montant_achat,operation.montant_vendu,operation.type])
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="export.xlsx"'
+    wb.save(response)
+    return response

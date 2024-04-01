@@ -1,0 +1,103 @@
+{% extends 'navbar.html' %}
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-center">Ajouter une opération</h2>
+        </div>
+        <div class="card-body">
+            <section class="container my-2 bg-white w-50 text-dark p-2">
+                <form class="row g-3 p-3" method="post" action="{% url 'add_operation' %}">
+                    {% csrf_token %}
+                    <div class="col-md-4">
+                        <label class="form-label">Date de l'opération:</label>
+                        <input type="date" class="form-control" name="date_operation" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Date de validation:</label>
+                        <input type="date" class="form-control" name="date_validation" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Contrepartie:</label>
+                        <input type="text" class="form-control" name="contrepartie" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Devise d'achat:</label>
+                        <select class="form-select" name="devise_achat" required>
+                            <option value="EUR">EUR</option>
+                            <option value="USD">USD</option>
+                            <option value="MRU">MRU</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Devise de vente:</label>
+                        <select class="form-select" name="devise_vente" required>
+                            <option value="EUR">EUR</option>
+                            <option value="USD">USD</option>
+                            <option value="MRU">MRU</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Cours:</label>
+                        <input type="number" class="form-control" name="taux" step="0.001" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Montant d'achat:</label>
+                        <input type="number" class="form-control" name="montant_achat" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Montant de vente:</label>
+                        <input type="number" class="form-control" name="montant_vendu" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Type:</label>
+                        <select class="form-select" name="type" required>
+                            <option value="IB">IB</option>
+                            <option value="CORP">CORP</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Direction:</label>
+                        <select class="form-select" name="direction" required>
+                            <option value="Sell">Sell</option>
+                            <option value="Buy">Buy</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-start">
+                        <button type="submit" class="btn btn-primary">Soumettre</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addOperation() {
+        var formData = new FormData(document.getElementById("operation_form"));
+        $.ajax({
+            type: "POST",
+            url: "{% url 'add_operation' %}",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Succès',
+                    text: 'L\'opération a été ajoutée avec succès',
+                }).then((result) => {
+                    window.location.href = "{% url 'visualisation' %}";
+                });
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Une erreur s\'est produite lors de l\'ajout de l\'opération. Veuillez réessayer.',
+                });
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'app.middleware.VerificationJourneeMiddleware',
 ]
 
 ROOT_URLCONF = 'salle_de_marche.urls'

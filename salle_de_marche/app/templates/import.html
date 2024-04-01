@@ -44,14 +44,42 @@
     <div class="mb-3 d-flex align-items-center"> <!-- Utilisation de flexbox pour aligner les éléments sur la même ligne -->
       
         <input class="form-control me-2" type="file" id="fileInput" name="fichier_excel" required> <!-- Ajout de la classe me-2 pour ajouter un espace à droite -->
-        <input type="submit" id="import_btn" class="btn btn-primary btn-sm" value="Importer">
+        <input type="submit" id="submitForm" class="btn btn-primary btn-sm" value="Importer">
     </div>
     <div class="invalid-feedback">Veuillez sélectionner un fichier.</div>
 </form>
 
 
+<script>
+   document.getElementById('submitForm').addEventListener('click', function(e) {
+        var fileInput = document.getElementById('fileInput');
 
+        if (!fileInput.value) {
+            e.preventDefault(); 
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: 'La sélection de fichier est obligatoire!',
+            });
+        } else {
+            // Vérifiez l'extension du fichier
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.xlsx)$/i; // Expression régulière pour les extensions de fichier autorisées
+            
+            if (!allowedExtensions.exec(filePath)) {
+                e.preventDefault(); // Empêche l'envoi du formulaire si le fichier n'est pas un fichier Excel
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Le fichier doit être au format Excel (.xlsx)',
+                });
+            } else {
+                document.getElementById('importForm').submit();
+            }
+        }
+    });
+</script>
 
 
                 
-                {% endblock content %}
+{% endblock content %}

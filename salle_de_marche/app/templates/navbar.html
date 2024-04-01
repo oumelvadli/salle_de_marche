@@ -51,6 +51,7 @@
                     <a href="{% url 'importer_donnes' %}" {% if navbar == "importer" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-sharp fa-solid fa-download"></i>Import</a>
                     <a href="{% url 'visualisation' %}" {% if navbar == "visualisation" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-eye"></i>Operations</a>
                     <a href="{% url 'calcul' %}" {% if navbar == "calcul" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-chart-simple"></i>Reporting</a>
+                    <!-- <a href="{% url 'EoD' %}"  {% if navbar == "EoD" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-chart-simple"></i>EoD</a> -->
 
                 </div>
             </nav>
@@ -121,6 +122,9 @@
     <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
     <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
     <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
     <!-- JavaScript du modèle -->
     <script src="{% static 'js/main.js' %}"></script>
