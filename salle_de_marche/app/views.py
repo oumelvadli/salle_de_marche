@@ -125,7 +125,7 @@ def importer_donnees(request):
                
     else:
         form = ExcelImportForm()
-    return render(request, 'import.html', {'form': form})
+    return render(request, 'import.html', {'form': form,'navbar':'importer'})
 
 @login_required
 def visualisation(request):
@@ -179,12 +179,7 @@ def calcul_position(request):
     prix_vente_total = operations.values('devise_vente').annotate(prix_vente_total=Sum(F('montant_vendu')))
     cv_achat = operations.values('devise_achat').annotate(cv_achat=Sum(F('montant_achat')*F('cours')))
     cv_vente = operations.values('devise_vente').annotate(cv_achat=Sum(F('montant_vendu')*F('cours')))
-    print(cv_vente)
-    print(cv_achat)
 
-
-    
-    # Calcul du prix moyen pondéré d'achat et de vente pour chaque devise pour la date spécifiée
     prix_moyen_achat = operations.values('devise_achat').annotate(
         prix_achat_total=Sum(F('montant_achat') * F('cours')),
         quantite_achat_total=Sum('montant_achat')
@@ -203,11 +198,11 @@ def calcul_position(request):
         'cv_achat': cv_achat,
         'cv_vente': cv_vente,
         'date_specifiee': date_specifiee,
+        'navbar':'calcul',
     }
     return render(request, 'calcul.html', context)
 
 def meilleures_contreparties(request):
-    # Filtrer les opérations de vente pour les contreparties IB
     operations_sell_ib = Operation.objects.filter(direction='sell').filter(type='IB')
     ventes_par_contrepartie_ib = operations_sell_ib.values('conterpartie').annotate(total_ventes=Sum('montant_vendu'))
     ventes_par_contrepartie_ib = ventes_par_contrepartie_ib.order_by('-total_ventes')
