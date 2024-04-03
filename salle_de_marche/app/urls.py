@@ -21,8 +21,8 @@ urlpatterns = [
     path('meilleures_contreparties/',views.meilleures_contreparties,name="meilleures_contreparties"),
     path('filter_operations/',views.filter_operations,name="filter_operations"),
     path('EoD/', views.EoD, name='EoD'),
-    path('export_to_excel/', views.export_to_excel, name='export_to_excel'),
-
+    path('export_to_excel_operations/', views.export_to_excel_operations, name='export_to_excel_operations'),
+    path('export_to_excel_reporting/', views.export_to_excel_reporting, name='export_to_excel_reporting'),
 
 
 

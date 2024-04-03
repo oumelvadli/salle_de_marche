@@ -10,6 +10,7 @@ import pandas as pd
 from django.db.models import Sum
 from django.db.models import Q
 import math 
+import json
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -238,7 +239,7 @@ def filter_operations(request):
     return render(request, 'visualiser.html', {'page_obj': page_obj})
 
 
-def export_to_excel(request):
+def export_to_excel_operations(request):
     data = Operation.objects.all()
     wb = Workbook()
     ws = wb.active
@@ -249,9 +250,25 @@ def export_to_excel(request):
     for operation in data:
         ws.append([operation.date_operation, operation.date_validation,operation.conterpartie,operation.direction,operation.devise_achat,operation.devise_vente,operation.cours,operation.montant_achat,operation.montant_vendu,operation.type])
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="export.xlsx"'
+    response['Content-Disposition'] = 'attachment; filename="Operations.xlsx"'
     wb.save(response)
     return response
+
+def export_to_excel_reporting(request):
+    if request.method == 'POST':
+        table_data = json.loads(request.POST.get('tableData'))
+
+        wb = Workbook()
+        ws = wb.active
+
+        for row_data in table_data:
+            ws.append(row_data)
+
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=Reporting.xlsx'
+
+        wb.save(response)
+        return response
 
 
 @staff_member_required

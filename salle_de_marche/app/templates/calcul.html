@@ -14,14 +14,12 @@
                       <input type="text" class="form-control" id="date_operation" name="date_operation" placeholder="Date">
                       <span id="dateError" class="text-danger"></span> 
                     </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                      <button type="submit" class="btn btn-primary mb-3 me-5">Valider</button>
-                      <a href="{% url 'meilleures_contreparties'%}" class="btn btn-primary mb-3 ">Meilleures Contrepartie</a>
-
+                    <div class="col-auto">
+                      <button type="submit" class="btn btn-primary mb-3">Valider</button>
                     </div>
                 <div class="table-responsive">
                     
-                    <table>
+                    <table class="table_visualiser">
                         <tr>
                             <th>Devise</th>
                             <th>Tot.Achat</th>
@@ -29,7 +27,7 @@
                             <th>PMPA</th>
                             <th>PMPV</th>
                             <th>C/V Achat</th>
-                            <!-- <th>C/V Vente</th> -->
+                            <th>C/V Vente</th>
                         </tr>
                         {% for item in prix_achat_total %}
                         <tr>
@@ -63,44 +61,75 @@
                                     {% endif %}
                                 {% endfor %}
                             </td>
-                            <!-- <td>
+                            <td>
                                 {% for cv_item in cv_vente %}
-                                    {% if cv_item.devise_vente == item.devise_achat %}
-                                        {{ cv_item.cv_vente |floatformat:"2" | intcomma }}
+                                    {% if cv_item.devise_vente == item.devise_vente %}
+                                        {{ cv_item.cv_vente | floatformat:"2" | intcomma }}
                                     {% endif %}
                                 {% endfor %}
-                            </td> -->
-                            
-                        
-                                
-                            
-                        
-                           
-
-
+                            </td>
                         </tr>
                         {% endfor %}
                     </table>
-                    <!-- <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{% url 'meilleures_contreparties'%}" class="btn btn-primary btn-sm me-md-2">Meilleures Contreparties</a>
-                        <a href="{% url 'export_to_excel'%}" class="btn btn-primary btn-sm">Edition xlsx</a>
-                    </div> -->
+                        <a href="#" id="exportBtn" class="btn btn-primary btn-sm">Exporter en Excel</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script>
-document.getElementById("dateForm").onsubmit = function() {
-    var dateInput = document.getElementById("date_operation").value;
-    var isValidDate = /^\d{2}\/\d{2}\/\d{4}$/.test(dateInput);
-    if (!isValidDate) {
-        document.getElementById("dateError").innerText = "Format de date incorrect. Utilisez le format DD/MM/YYYY.";
-        return false; 
+    document.getElementById("exportBtn").onclick = function() {
+        var tableData = [];
+        var rows = document.querySelectorAll('.table_visualiser tr');
+        rows.forEach(function(row) {
+            var rowData = [];
+            row.querySelectorAll('td, th').forEach(function(cell) {
+                rowData.push(cell.innerText);
+            });
+            tableData.push(rowData);
+        });
+    
+        var csrftoken = getCookie('csrftoken');
+    
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{% url "export_to_excel_reporting" %}';
+        form.style.display = 'none';
+    
+        var dataInput = document.createElement('input');
+        dataInput.type = 'hidden';
+        dataInput.name = 'tableData';
+        dataInput.value = JSON.stringify(tableData);
+        form.appendChild(dataInput);
+    
+        var csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrftoken;
+        form.appendChild(csrfInput);
+    
+        document.body.appendChild(form);
+        form.submit();
+    };
+    
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
-    else {
-        document.getElementById("dateError").innerText = ""; 
-    }
-};
 </script>
+    
+    
 {% endblock %}
