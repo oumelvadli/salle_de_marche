@@ -33,47 +33,49 @@
                 </form>
                 
               
+                <div class="table_container">
+                    <table id="myTable" class="table_visualiser">
+                        <thead>
+                            <tr>
+                                <th>Date operation</th>
+                                <th>Date validation</th>
+                                <th>Conterpartie</th>
+                                <th>Direction</th>
+                                <th>Devise achat</th>
+                                <th>Devise vente</th>
+                                <th>Cours</th>
+                                <th>Montant achat</th>
+                                <th>Montant vendu</th>
+                                <th>Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for operation in page_obj %}
+                            <tr>
+                                <td>{{ operation.date_operation | date:"Y/m/d" }}</td>
+                                <td>{{ operation.date_validation| date:"Y/m/d" }}</td>
+                                <td>{{ operation.conterpartie }}</td>
+                                <td>{{ operation.direction }}</td>
+                                <td>{{ operation.devise_achat }}</td>
+                                <td>{{ operation.devise_vente}}</td>
+                                <td>{{ operation.cours }}</td>
+                                <td>{{ operation.montant_achat  }}</td>
+                                <td>{{ operation.montant_vendu }}</td>
+                                <td>{{ operation.type }}</td>
+                                <td>
+                                    <div class="btn-group" role="group" aria-label="Actions">
+                                        <a href="#"  class="btn btn-primary btn-sm"  onclick="editOperation( '{{ operation.date_operation | date:'Y-m-d' }}','{{ operation.date_validation | date:'Y-m-d' }}' , '{{ operation.conterpartie }}','{{ operation.devise_achat }}','{{ operation.devise_vente }}','{{ operation.cours }}','{{ operation.montant_achat }}','{{ operation.montant_vendu }}','{{ operation.type }}', '{{ operation.direction }}', '{{operation.id}}')">modifier</a>
+                                        <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete('{{operation.id}}')">Supprimer</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+        
+                    </table> 
+                    </div>   
                     
-                    <table>
-                        <tr>
-                            <th>Date operation</th>
-                            <th>Date validation</th>
-                            <th>Conterpartie</th>
-                            <th>Direction</th>
-                            <th>Devise achat</th>
-                            <th>Devise vente</th>
-                            <th>Cours</th>
-                            <th>Montant achat</th>
-                            <th>Montant vendu</th>
-                            <th>Type</th>
-                            <th>Action</th>
-                        </tr>
-                        {% for operation in page_obj %}
-                        <tr>
-                            <td>{{ operation.date_operation | date:"d/m/Y" }}</td>
-                            <td>{{ operation.date_validation| date:"d/m/Y" }}</td>
-                            <td>{{ operation.conterpartie }}</td>
-                            <td>{{ operation.direction }}</td>
-                            <td>{{ operation.devise_achat }}</td>
-                            <td>{{ operation.devise_vente}}</td>
-                            <td>{{ operation.cours }}</td>
-                            <td>{{ operation.montant_achat | intcomma }}</td>
-                            <td>{{ operation.montant_vendu | intcomma}}</td>
-                            <td>{{ operation.type }}</td>
-                            <td>
-                                <div class="btn-group" role="group" aria-label="Actions">
-                                    <a href="{% url 'update_operation' operation.id %}" class="btn btn-primary btn-sm">Modifier</a>
-                                    <a href="{% url 'delete_operation' operation.id %}" class="btn btn-danger btn-sm">Supprimer</a>
-                                </div>
-                            </td>
-                        </tr>
-                        
-                        {% empty %}
-                        <tr>
-                            <td colspan="11">Aucune opération trouvée pour cette date.</td>
-                        </tr>
-                        {% endfor %}
-                    </table>
                     
                 
                 <div class="container">
@@ -102,8 +104,103 @@
                     </div>
 
 
-                </div></div>
-               
+                </div>
+            </div>
+              
+            <!-- ============================================= editOperation ============================================================= -->
+
+<div id="editOperation" class="modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">						
+          <h4 class="modal-title">modifier operation</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="col-sm-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                <form  id="formoperation" method="post" action="">
+                  {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Date operation: </label>
+                        <input type="date" class="form-control" name="date_operation" id="dateoperation"  required>
+                        <small id="editDateErrorBande" class="text-danger"></small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date validation: </label>
+                        <input type="date" class="form-control" name="date_validation" id="datevalidation"  required>
+                        <small id="editDateErrorBande" class="text-danger"></small>
+                    </div>                    
+                    <div class="mb-3">
+                        <label class="form-label">Conterpartie: </label>
+                        <input type="text" class="form-control" name="conterpartie" id="conterpartie"  required>
+                        <small id="editDateErrorBande" class="text-danger"></small>
+                    </div>                    
+                    <div class="mb-3">
+                      <label class="form-label">Devise achat:</label>
+                      <select name="devise_achat" class="form-control" id="deviseachat" required>
+                        <option value="EUR" {% if operation.devise_achat == "EUR" %} selected {% endif %}>EUR</option>
+                        <option value="USD" {% if operation.devise_achat == "USD" %} selected {% endif %}>USD</option>
+                        <option value="MRU" {% if operation.devise_vente == "MRU" %} selected {% endif %}>MRU</option>
+                      </select>
+                  </div>   
+                  <div class="mb-3">
+                    <label class="form-label">Devise vente:</label>
+                    <select name="devise_vente" class="form-control" id="devisevente" required>
+                      <option value="EUR" {% if operation.devise_vente == "EUR" %} selected {% endif %}>EUR</option>
+                      <option value="USD" {% if operation.devise_vente == "USD" %} selected {% endif %}>USD</option>
+                      <option value="MRU" {% if operation.devise_vente == "MRU" %} selected {% endif %}>MRU</option>
+                    </select>
+                </div>        
+                  <div class="mb-3">
+                    <label class="form-label">Cours: </label>
+                    <input type="number" class="form-control" name="cours" id="cours" step="0.001" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Montant achat: </label>
+                    <input type="number" class="form-control" name="montant_achat" id="montantachat"  required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Montant vendu: </label>
+                    <input type="number" class="form-control" name="montant_vendu" id="montantvendu"  required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Type: </label>
+                    <input type="text" class="form-control" name="type" id="type" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Direction: </label>
+                    <input type="text" class="form-control" name="direction" id="direction" required>
+                  </div>
+                  <button type="button" class="btn btn-lg btn-secondary m-2" data-bs-dismiss="modal">Annuler</button>
+                  <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--============================ suppression =========================-->
+
+<div id="supprimerOperation" class="modal fade">
+        <div class="modal-dialog">
+                <div class="modal-content">
+                        <div class="modal-header">						
+                            <div class="card-body">
+                                <h2 class="card-title text-center mb-4">Confirmation de suppression</h2>
+                                <p>Voulez-vous vraiment supprimer cet operation ?</p>
+                                <form method="post" id="deleteForm">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-block">Confirmer la suppression</button>
+                                    <button type="button" class="btn btn-secondary btn-block" data-bs-dismiss="modal">Annuler</button>
+                                </form>
+                            </div>
+                        </div>  
+                    </div>
+                </div>
+            </div>
             </div>
             
         </div>
@@ -133,5 +230,69 @@ document.getElementById("dateForm").onsubmit = function() {
     }
 };
 </script>
+<script>
+
+    $(document).ready(function() {
+        $('#supprimerOperation').modal('hide'); // Assurez-vous que la modal est cachée au chargement de la page
+    });
+
+    // Fonction pour ouvrir la modal de confirmation de suppression
+    function confirmDelete(operation_id) {
+        var deleteForm = $('#deleteForm');
+        deleteForm.attr('action', '/operation/' + operation_id + '/delete/'); // Assurez-vous que le formulaire de suppression est soumis à l'URL appropriée
+        $('#supprimerOperation').modal('show'); // Afficher la modal de confirmation de suppression
+    }
+
+</script>
+
+
+  <script>
+    $(document).ready(function(){
+        $('#editOperation').modal('hide'); // assurez-vous que la modal est cachée au chargement de la page
+    });
+
+    // Fonction pour ouvrir la modal
+    function editOperation(date_operation, date_validation, contrepartie, devise_achat, devise_vente, cours, montant_achat, montant_vendu, type, direction, operation_id) {
+        // remplissez les champs de la modal avec les valeurs passées en paramètres
+        $('#dateoperation').val(date_operation);
+        $('#datevalidation').val(date_validation);
+        $('#conterpartie').val(contrepartie);
+        $('#deviseachat').val(devise_achat);
+        $('#devisevente').val(devise_vente);
+        $('#cours').val(cours);
+        $('#montantachat').val(montant_achat);
+        $('#montantvendu').val(montant_vendu);
+        $('#type').val(type);
+        $('#direction').val(direction);
+        // ici, vous pouvez ajouter le code pour d'autres champs de formulaire si nécessaire
+
+        // assurez-vous que le formulaire est soumis à l'URL appropriée pour la mise à jour
+        $('#formoperation').attr('action', '/operation/' + operation_id +'/update/');
+
+        // afficher la modal
+        $('#editOperation').modal('show');
+    }
+</script>
+<script>
+  function validateDates() {
+      var startDateInput = document.getElementById('start_date');
+      var endDateInput = document.getElementById('end_date');
+      var errorParagraph = document.getElementById('date_error');
+
+      var startDate = new Date(startDateInput.value);
+      var endDate = new Date(endDateInput.value);
+
+      if (startDate > endDate) {
+          errorParagraph.textContent = "La date de début ne peut pas être postérieure à la date de fin.";
+          errorParagraph.style.display = 'block';
+          setTimeout(function() {
+              errorParagraph.style.display = 'none';
+          }, 1500);
+          return false;
+      }
+      return true;
+  }
+</script>
+
 
 {% endblock %}
