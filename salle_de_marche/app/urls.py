@@ -26,6 +26,13 @@ urlpatterns = [
 
 
 
+    path('users/',views.gestion_utilisateurs,name="users"),
+    path('inscription',views.inscription,name="inscription"),
+
+
+    path('toggle_user_active/<int:user_id>/', views.toggle_user_active, name='toggle_user_active'),
+    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('change_password/<int:user_id>/', views.change_password, name='change_password'),
 
 
 

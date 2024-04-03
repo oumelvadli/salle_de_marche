@@ -1,0 +1,137 @@
+{% extends 'navbar.html' %}
+
+{% load static %}
+
+{% block title %}
+   Utilisateur 
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid pt-4 px-4">
+  <div class="row g-4">
+      <div class="col-sm-12 col-xl-12">
+          <div class="bg-light rounded h-100 p-4">
+              <h6 class="mb-4">Gestion utilisateurs</h6>
+              {% if messages %}
+              {% for message in messages %}
+                  {% if message.tags == 'success' %}
+                      <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
+                          {{ message }}
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                  {% elif message.tags == 'error' %}
+                      <div class="alert alert-danger alert-dismissible fade show" role="alert" id="success-alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                  {% endif %}
+              {% endfor %}
+            {% endif %}
+              <div class="m-n2" >
+                <button class="btn btn-lg btn-primary m-2" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseuser" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                  Ajouter un utilisateur
+                </button>   
+            </div>
+            <br>
+            <div id="panelsStayOpen-collapseuser" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+              <div class="col-sm-12 col-xl-4 float-start">
+                <form method="post" action="{% url 'inscription' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}    
+                    <button type="submit">Ajouter</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+      </div>
+
+
+
+
+      <div class="col-sm-12 col-xl-12">
+        <div class="bg-light rounded h-100 p-4">
+          <h6 class="mb-4">Utilisateurs</h6>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th > Nom d'utilisateur</th>
+                        <th scope="col"> derniere login</th>
+                        <th scope="col">admin </th>
+                        <th scope="col"> active</th>
+                        <th scope="col">  Actions </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in utilisateurs %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.last_login }}</td>
+                        <td>{{ user.is_staff }}</td>
+                        <td>{{ user.is_active }}</td>
+                        <td>
+                            {% if user.is_active %}
+                                <a href="{% url 'toggle_user_active' user.id %}">Désactiver</a>
+                            {% else %}
+                                <a href="{% url 'toggle_user_active' user.id %}">Activer</a>
+                            {% endif %}
+                            | <a href="{% url 'delete_user' user.id %}">Supprimer</a>
+                            | <a href="#"   onclick="editpassword('{{user.id}}')">changer Password</a></td>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="editpassword" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">						
+                <h4 class="modal-title">Changer le mot de passe</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-sm-12 col-xl-12">
+                    <div class="bg-light rounded h-100 p-4">
+                        <form id="formoperation" method="post" action="">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Nouveau mot de passe:</label>
+                                <input type="password" class="form-control" name="new_password1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirmer le nouveau mot de passe:</label>
+                                <input type="password" class="form-control" name="new_password2" required>
+                            </div>                     
+                            <button type="button" class="btn btn-lg btn-secondary m-2" data-bs-dismiss="modal">Annuler</button>
+                            <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('#editpassword').modal('hide'); // assurez-vous que la modal est cachée au chargement de la page
+    });
+
+    // Fonction pour ouvrir la modal
+    function editpassword(user_id) {
+        // assurez-vous que le formulaire est soumis à l'URL appropriée pour la mise à jour
+        $('#formoperation').attr('action', '/change_password/' + user_id + '/' );
+        // afficher la modal
+        $('#editpassword').modal('show');
+    }
+</script>
+
+
+{% endblock %}

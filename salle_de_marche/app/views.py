@@ -20,6 +20,12 @@ from django.http import HttpResponse,JsonResponse
 from openpyxl import Workbook
 
 
+
+from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth import update_session_auth_hash
+
 @login_required
 def Accueil(request):
     return render(request,"Accueil.html",{'navbar':'Accueil'})
@@ -30,7 +36,9 @@ def EoD(request):
 def MarketData(request):
     Cours_revaluations = Cours_revaluation.objects.all().order_by('-date')
     Bande_fluctuations = Bande_fluctuation.objects.all().order_by('-date')
-    date_actuelle = datetime.date.today().strftime('%Y-%m-%d')
+    # date_actuelle = datetime.date.today().strftime('%Y-%m-%d')
+    date_actuelle = datetime.now().date()
+
     return render(request,"MarketData.html",{'navbar':'MarketData','date_actuelle':date_actuelle,'Cours_revaluations':Cours_revaluations,'Bande_fluctuations':Bande_fluctuations})
 
 def Traitment(request):
@@ -199,13 +207,21 @@ def calcul_position(request):
     return render(request, 'calcul.html', context)
 
 def meilleures_contreparties(request):
-    operations_sell = Operation.objects.filter(direction='sell')
-    ventes_par_contrepartie = operations_sell.values('conterpartie').annotate(total_ventes=Sum('montant_vendu'))
-    ventes_par_contrepartie = ventes_par_contrepartie.order_by('-total_ventes')
-    meilleures_contreparties = ventes_par_contrepartie[:5]
+    # Filtrer les opérations de vente pour les contreparties IB
+    operations_sell_ib = Operation.objects.filter(direction='sell').filter(type='IB')
+    ventes_par_contrepartie_ib = operations_sell_ib.values('conterpartie').annotate(total_ventes=Sum('montant_vendu'))
+    ventes_par_contrepartie_ib = ventes_par_contrepartie_ib.order_by('-total_ventes')
+    meilleures_contreparties_ib = ventes_par_contrepartie_ib[:5]
+
+    # Filtrer les opérations de vente pour les contreparties CORP
+    operations_sell_corp = Operation.objects.filter(direction='sell').filter(type='CORP')
+    ventes_par_contrepartie_corp = operations_sell_corp.values('conterpartie').annotate(total_ventes=Sum('montant_vendu'))
+    ventes_par_contrepartie_corp = ventes_par_contrepartie_corp.order_by('-total_ventes')
+    meilleures_contreparties_corp = ventes_par_contrepartie_corp[:5]
 
     context = {
-        'meilleures_contreparties': meilleures_contreparties
+        'meilleures_contreparties_ib': meilleures_contreparties_ib,
+        'meilleures_contreparties_corp': meilleures_contreparties_corp
     }
     return render(request, 'meilleures_contreparties.html', context)
 
@@ -241,3 +257,55 @@ def export_to_excel(request):
     response['Content-Disposition'] = 'attachment; filename="export.xlsx"'
     wb.save(response)
     return response
+
+
+@staff_member_required
+def gestion_utilisateurs(request):
+    utilisateurs = User.objects.all()
+    form=CustomUerCreationForm()
+    return render(request, 'users.html', {'utilisateurs': utilisateurs,'form':form,'navbar': 'users'})
+
+def inscription(request):
+    if request.method == 'POST':
+        form=CustomUerCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Votre compte a été créé avec succès !')
+            return redirect('users')
+        else:
+            # Form is not valid, render the form with errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
+            return redirect('users')
+    else:
+        return redirect('users')
+
+@staff_member_required
+def toggle_user_active(request, user_id):
+    user = User.objects.get( id=user_id)
+    user.is_active = not user.is_active
+    user.save()
+    return redirect('users')
+
+@staff_member_required
+def delete_user(request, user_id):
+    user = User.objects.get(id=user_id)
+    user.delete()
+    return redirect('users')
+
+@staff_member_required
+def change_password(request, user_id):
+    user = User.objects.get( id=user_id)
+    if request.method == 'POST':
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important to update the session with the new password
+            messages.success(request, 'Votre mot de passe a été modifié avec succès !')
+            return redirect('users')
+        else:
+            messages.error(request, 'Une erreur s\'est produite lors de la modification de votre mot de passe.')
+            return redirect('users')
+    else:
+        return redirect('users')
