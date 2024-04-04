@@ -5,7 +5,6 @@
 {% block content %}
 
 
-<!-- <h1 style="text-align: center; ">Liste des opérations</h1> -->
 
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
@@ -77,35 +76,7 @@
                     </div>   
                     
                     
-                
-                <div class="container">
-                <div class="row">
-                    <div class="col-md-4 offset-md-8">
-                        <nav aria-label="...">
-                            <ul class="pagination">
-                                {% if page_obj.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédente</a>
-                                    </li>
-                                {% endif %}
-                                {% for num in page_obj.paginator.page_range %}
-                                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
-                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                                    </li>
-                                {% endfor %}
-                                {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivante</a>
-                                    </li>
-                                {% endif %}
-                            </ul>
-                          </nav>
 
-                    </div>
-
-
-                </div>
-            </div>
               
             <!-- ============================================= editOperation ============================================================= -->
 
@@ -206,6 +177,8 @@
         </div>
     </div>
 </div>
+
+
 
 <script>
 document.getElementById("dateForm").onsubmit = function() {
