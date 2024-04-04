@@ -14,7 +14,7 @@ urlpatterns = [
     path('importer/',views.importer_donnees,name="importer_donnes"),
     path('visualisation/',views.visualisation,name="visualisation"),
     path('operation/<int:id>/update/',views.update_operation,name="update_operation"),
-    path('operation/<int:id>/delet/',views.delete_operation,name="delete_operation"),
+    path('operation/<int:id>/delete/',views.delete_operation,name="delete_operation"),
     path('addoperation/',views.add_operation,name="add_operation"),
 
     path('position/',views.calcul_position,name="calcul"),
