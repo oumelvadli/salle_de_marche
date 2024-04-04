@@ -10,6 +10,7 @@ import pandas as pd
 from django.db.models import Sum
 from django.db.models import Q
 import math 
+import json
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -125,7 +126,7 @@ def importer_donnees(request):
                
     else:
         form = ExcelImportForm()
-    return render(request, 'import.html', {'form': form})
+    return render(request, 'import.html', {'form': form,'navbar':'importer'})
 
 @login_required
 def visualisation(request):
@@ -179,12 +180,7 @@ def calcul_position(request):
     prix_vente_total = operations.values('devise_vente').annotate(prix_vente_total=Sum(F('montant_vendu')))
     cv_achat = operations.values('devise_achat').annotate(cv_achat=Sum(F('montant_achat')*F('cours')))
     cv_vente = operations.values('devise_vente').annotate(cv_achat=Sum(F('montant_vendu')*F('cours')))
-    print(cv_vente)
-    print(cv_achat)
 
-
-    
-    # Calcul du prix moyen pondéré d'achat et de vente pour chaque devise pour la date spécifiée
     prix_moyen_achat = operations.values('devise_achat').annotate(
         prix_achat_total=Sum(F('montant_achat') * F('cours')),
         quantite_achat_total=Sum('montant_achat')
@@ -203,11 +199,11 @@ def calcul_position(request):
         'cv_achat': cv_achat,
         'cv_vente': cv_vente,
         'date_specifiee': date_specifiee,
+        'navbar':'calcul',
     }
     return render(request, 'calcul.html', context)
 
 def meilleures_contreparties(request):
-    # Filtrer les opérations de vente pour les contreparties IB
     operations_sell_ib = Operation.objects.filter(direction='sell').filter(type='IB')
     ventes_par_contrepartie_ib = operations_sell_ib.values('conterpartie').annotate(total_ventes=Sum('montant_vendu'))
     ventes_par_contrepartie_ib = ventes_par_contrepartie_ib.order_by('-total_ventes')
@@ -243,7 +239,7 @@ def filter_operations(request):
     return render(request, 'visualiser.html', {'page_obj': page_obj})
 
 
-def export_to_excel(request):
+def export_to_excel_operations(request):
     data = Operation.objects.all()
     wb = Workbook()
     ws = wb.active
@@ -254,9 +250,25 @@ def export_to_excel(request):
     for operation in data:
         ws.append([operation.date_operation, operation.date_validation,operation.conterpartie,operation.direction,operation.devise_achat,operation.devise_vente,operation.cours,operation.montant_achat,operation.montant_vendu,operation.type])
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="export.xlsx"'
+    response['Content-Disposition'] = 'attachment; filename="Operations.xlsx"'
     wb.save(response)
     return response
+
+def export_to_excel_reporting(request):
+    if request.method == 'POST':
+        table_data = json.loads(request.POST.get('tableData'))
+
+        wb = Workbook()
+        ws = wb.active
+
+        for row_data in table_data:
+            ws.append(row_data)
+
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=Reporting.xlsx'
+
+        wb.save(response)
+        return response
 
 
 @staff_member_required
