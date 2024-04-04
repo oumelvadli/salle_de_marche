@@ -14,10 +14,8 @@
                       <input type="text" class="form-control" id="date_operation" name="date_operation" placeholder="Date">
                       <span id="dateError" class="text-danger"></span> 
                     </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                      <button type="submit" class="btn btn-primary mb-3 me-5">Valider</button>
-                      <a href="{% url 'meilleures_contreparties'%}" class="btn btn-primary mb-3">Meilleures Contrp</a>
-
+                    <div class="col-auto">
+                      <button type="submit" class="btn btn-primary mb-3">Valider</button>
                     </div>
                 <div class="table-responsive">
                     
@@ -74,8 +72,8 @@
                         {% endfor %}
                     </table>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <!-- <a href="{% url 'meilleures_contreparties'%}" class="btn btn-primary btn-sm me-md-2">Meilleures Contreparties</a> -->
-                        <!-- <a href="#" id="exportBtn" class="btn btn-primary btn-sm">Exporter en Excel</a> -->
+                        <a href="{% url 'meilleures_contreparties'%}" class="btn btn-primary btn-sm me-md-2">Meilleures Contreparties</a>
+                        <a href="#" id="exportBtn" class="btn btn-primary btn-sm">Exporter en Excel</a>
                     </div>
                 </div>
             </div>
