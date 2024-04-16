@@ -155,9 +155,7 @@ def update_operation(request, id):
         if form.is_valid():
             form.save()
             return redirect('visualisation')
-    else:
-        form = OperationForm(instance=operation)
-    return render(request, 'update_operation.html', {'form': form})
+
 
 def delete_operation(request, id):
     operation = Operation.objects.get(id=id)
