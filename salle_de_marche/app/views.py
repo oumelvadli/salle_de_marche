@@ -165,6 +165,7 @@ def delete_operation(request, id):
         operation.delete()
         return redirect('visualisation')  
     return render(request, 'delete_operation.html', {'operation': operation})
+
 @login_required
 def calcul_position(request):
     date_specifiee = request.GET.get('date_operation')
