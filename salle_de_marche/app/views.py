@@ -127,10 +127,16 @@ def importer_donnees(request):
     else:
         form = ExcelImportForm()
     return render(request, 'import.html', {'form': form,'navbar':'importer'})
+from django.db.models.functions import ExtractDay, ExtractMonth, ExtractYear
 
 @login_required
 def visualisation(request):
-    operations_list = Operation.objects.all()
+    # operations_list = Operation.objects.all()
+    operations_list = Operation.objects.all().order_by(
+        ExtractYear('date_operation').desc(),
+        ExtractMonth('date_operation').desc(),
+        ExtractDay('date_operation').desc()
+    )
     paginator =Paginator(operations_list, 15)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -139,6 +145,7 @@ def visualisation(request):
 def add_operation(request):
     if request.method == "POST":
         form = OperationForm(request.POST)
+        print(form.errors)
         if form.is_valid():
             form.save()
             # messages.success(request,"L'operation  a été ajouté avec succès")
@@ -321,3 +328,36 @@ def change_password(request, user_id):
             return redirect('users')
     else:
         return redirect('users')
+
+
+from django.shortcuts import get_object_or_404
+
+from django.template.loader import render_to_string
+from weasyprint import HTML
+def download_ticket(request, operation_id):
+    # Récupérer l'opération
+    operation = get_object_or_404(Operation, id=operation_id)
+
+    # Rendre le template HTML en chaîne
+    html_string = render_to_string('tickete.html', {'operation': operation})
+
+    # Créer un PDF
+    html = HTML(string=html_string)
+    result = html.write_pdf()
+
+    # Créer une réponse HTTP avec le PDF
+    response = HttpResponse(result, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="operation_{}.pdf"'.format(operation_id)
+
+    return response
+
+
+
+
+
+
+
+
+
+
+

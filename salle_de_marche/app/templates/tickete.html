@@ -1,0 +1,19 @@
+<!-- templates/operation_pdf.html -->
+<html>
+<head>
+    <title>Tickete de change</title>
+</head>
+<body>
+    <h1>Ticket de change</h1>
+    <p>Date d'opération: {{ operation.date_operation }}</p>
+    <p>Date de validation: {{ operation.date_validation }}</p>
+    <p>Contrepartie: {{ operation.conterpartie }}</p>
+    <p>Devise d'achat: {{ operation.devise_achat }}</p>
+    <p>Devise de vente: {{ operation.devise_vente }}</p>
+    <p>Cours: {{ operation.cours }}</p>
+    <p>Montant acheté: {{ operation.montant_achat }}</p>
+    <p>Montant vendu: {{ operation.montant_vendu }}</p>
+    <p>Type: {{ operation.type }}</p>
+    <p>Direction: {{ operation.direction }}</p>
+</body>
+</html>

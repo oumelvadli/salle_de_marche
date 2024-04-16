@@ -1,0 +1,10 @@
+{% extends 'navbar.html' %}
+
+{% load static %}
+<!-- Formulaire pour définir la date de fermeture -->
+<form action="{% url 'update_date_fermeture' %}" method="post">
+    {% csrf_token %}
+    <label for="date_fermeture">Date de fermeture :</label>
+    <input type="date" id="date_fermeture" name="date_fermeture">
+    <input type="submit" value="Valider">
+</form>

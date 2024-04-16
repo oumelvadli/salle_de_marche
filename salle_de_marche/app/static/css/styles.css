@@ -326,3 +326,232 @@
           }
           .table_visualiser tr:hover {
                   background-color: #009CFF;}
+
+
+.desktop-1 .ticket-de-change {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 64px;
+  color: #000000;
+}
+.desktop-1 .frame-1 {
+  margin: 0 38.7px 93px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-self: center;
+  box-sizing: border-box;
+}
+.desktop-1 .date-de-loperation {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-2 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .date-valeur {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-3 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .conterpartie {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-4 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .container-3 {
+  margin: 0 32px 96px 32px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: flex-start;
+  width: 1068.8px;
+  box-sizing: border-box;
+}
+.desktop-1 .devise-achetee {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-5 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .devise-vendue {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-6 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .cours {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-7 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .container-1 {
+  margin: 0 32px 91px 32px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: flex-start;
+  width: 1005.1px;
+  box-sizing: border-box;
+}
+.desktop-1 .montant-achetee {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-8 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .montant-vendue {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-9 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .container-2 {
+  margin: 0 32px 147px 32px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: flex-start;
+  width: 589.3px;
+  box-sizing: border-box;
+}
+.desktop-1 .front-office {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-12 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .middle-office {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-13 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .back-office {
+  overflow-wrap: break-word;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 20px;
+  color: #000000;
+}
+.desktop-1 .frame-14 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.desktop-1 .container {
+  margin: 0 55.8px 29px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: center;
+  width: 941.2px;
+  box-sizing: border-box;
+}
+.desktop-1 .rectangle-4 {
+  border: 1px solid #000000;
+  background: #FFFFFF;
+  width: 379px;
+  height: 148px;
+}
+.desktop-1 .rectangle-2 {
+  border: 1px solid #000000;
+  background: #FFFFFF;
+  width: 379px;
+  height: 148px;
+}
+.desktop-1 .rectangle-3 {
+  border: 1px solid #000000;
+  background: #FFFFFF;
+  width: 379px;
+  height: 148px;
+}
+.desktop-1 .frame-11 {
+  display: flex;
+  flex-direction: row;
+  column-gap: 50px;
+  width: 1237px;
+  box-sizing: border-box;
+}
+.desktop-1 {
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  padding: 117px 125px 130px 78px;
+  width: 1440px;
+  box-sizing: border-box;
+}
