@@ -152,7 +152,7 @@ def add_operation(request):
         return redirect('visualisation')
     else:
         form = OperationForm()
-    return render(request, 'operation_form.html', {'form': form})
+    return render(request, 'visualiser.html', {'form': form})
 
 
 def update_operation(request, id):
