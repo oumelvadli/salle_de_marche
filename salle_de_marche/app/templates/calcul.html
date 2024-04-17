@@ -130,6 +130,24 @@
         return cookieValue;
     }
 </script>
+
+<script>
+    document.getElementById("dateForm").onsubmit = function() {
+        var date_operation = document.getElementById("date_operation").value;
+    
+    
+        var isValidStartDate = /^\d{2}\/\d{2}\/\d{4}$/.test(date_operation);
+    
+        if (!isValidStartDate) {
+            document.getElementById("dateError").innerText = "Format de date incorrect. Utilisez le format DD/MM/YYYY.";
+            return false;
+        } else {
+            document.getElementById("dateError").innerText = "";
+        }
+    
+       
+    };
+    </script>
     
     
 {% endblock %}

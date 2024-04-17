@@ -41,9 +41,9 @@
 <form action="{% url 'importer_donnes' %}" id="importForm" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
     {% csrf_token %}
     <label for="fileInput" class="form-label me-2">Sélectionnez le fichier à importer :</label>
-    <div class="mb-3 d-flex align-items-center"> <!-- Utilisation de flexbox pour aligner les éléments sur la même ligne -->
+    <div class="mb-3 d-flex align-items-center">
       
-        <input class="form-control me-2" type="file" id="fileInput" name="fichier_excel" required> <!-- Ajout de la classe me-2 pour ajouter un espace à droite -->
+        <input class="form-control me-2" type="file" id="fileInput" name="fichier_excel" required> 
         <input type="submit" id="submitForm" class="btn btn-primary btn-sm" value="Importer">
     </div>
     <div class="invalid-feedback">Veuillez sélectionner un fichier.</div>
