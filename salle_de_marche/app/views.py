@@ -130,23 +130,23 @@ def importer_donnees(request):
 
 @login_required
 def visualisation(request):
-    operations_list = Operation.objects.all()
-    paginator =Paginator(operations_list, 15)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = Operation.objects.all()
     return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation'})
      
+from .forms import OperationForm
+
+
 def add_operation(request):
     if request.method == "POST":
         form = OperationForm(request.POST)
         if form.is_valid():
             form.save()
-            # messages.success(request,"L'operation  a été ajouté avec succès")
-        return redirect('visualisation')
+            return HttpResponse("L'opération a été ajoutée avec succès")
+        else:
+            return HttpResponse("Il y a eu une erreur dans le formulaire")
     else:
         form = OperationForm()
     return render(request, 'operation_form.html', {'form': form})
-
 
 def update_operation(request, id):
     operation = Operation.objects.get(id=id)

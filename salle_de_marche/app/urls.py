@@ -34,8 +34,4 @@ urlpatterns = [
     path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
     path('change_password/<int:user_id>/', views.change_password, name='change_password'),
 
-
-
-   
-
 ]
