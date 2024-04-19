@@ -26,6 +26,10 @@ from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import update_session_auth_hash
+from xhtml2pdf import pisa
+from django.template import loader
+from django.shortcuts import get_object_or_404
+
 
 @login_required
 def Accueil(request):
@@ -329,26 +333,28 @@ def change_password(request, user_id):
         return redirect('users')
 
 
-from django.shortcuts import get_object_or_404
-
-from django.template.loader import render_to_string
-from weasyprint import HTML
 def download_ticket(request, operation_id):
-    # Récupérer l'opération
     operation = get_object_or_404(Operation, id=operation_id)
 
-    # Rendre le template HTML en chaîne
-    html_string = render_to_string('tickete.html', {'operation': operation})
+    # Chargez le template à l'aide du moteur de template
+    template = loader.get_template('tickete.html')
 
-    # Créer un PDF
-    html = HTML(string=html_string)
-    result = html.write_pdf()
+    # Créez un dictionnaire avec les données de l'opération pour le contexte
+    context = {'operation': operation}
 
-    # Créer une réponse HTTP avec le PDF
-    response = HttpResponse(result, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="operation_{}.pdf"'.format(operation_id)
+    # Rendez les données dans le template en utilisant le contexte
+    rendered_template = template.render(context, request)
 
-    return "response"
+    # Utilisez xhtml2pdf pour générer le PDF à partir du contenu rendu
+    pdf_output = pisa.CreatePDF(rendered_template)
+
+    if not pdf_output.err:
+        # Créez une réponse HttpResponse avec le contenu PDF généré
+        response = HttpResponse(pdf_output.dest.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = 'filename="tickete.pdf"'  # Nom du fichier de téléchargement
+        return response
+    else:
+        return HttpResponse('Erreur lors de la génération du PDF.', status=500)
 
 
 
