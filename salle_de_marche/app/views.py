@@ -348,7 +348,7 @@ def download_ticket(request, operation_id):
     response = HttpResponse(result, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="operation_{}.pdf"'.format(operation_id)
 
-    return response
+    return "response"
 
 
 
