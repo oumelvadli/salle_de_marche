@@ -7,23 +7,27 @@
         </div>
         <div class="card-body">
             <section class="container my-2 bg-white w-50 text-dark p-2">
+<<<<<<< HEAD
                 <form class="row g-3 p-3" method="POST" action="{% url 'add_operation' %}">
+=======
+                <form class="row g-3 p-3" id="operation_form" method="post" action="{% url 'add_operation' %}">
+>>>>>>> cf1f56945026045f3db66c4428fb5685f3174f6e
                     {% csrf_token %}
                     <div class="col-md-4">
                         <label class="form-label">Date de l'opération:</label>
-                        <input type="date" class="form-control" name="date_operation" required>
+                        <input type="date" id="date_operation" class="form-control" name="date_operation" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Date de validation:</label>
-                        <input type="date" class="form-control" name="date_validation" required>
+                        <input type="date" id="date_validation" class="form-control" name="date_validation" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Contrepartie:</label>
-                        <input type="text" class="form-control" name="contrepartie" required>
+                        <input type="text" id="conterpartie" class="form-control" name="conterpartie" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Devise d'achat:</label>
-                        <select class="form-select" name="devise_achat" required>
+                        <select class="form-select" id="devise_achat" name="devise_achat" required>
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
                             <option value="MRU">MRU</option>
@@ -31,7 +35,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Devise de vente:</label>
-                        <select class="form-select" name="devise_vente" required>
+                        <select id="devise_vente" class="form-select" name="devise_vente" required>
                             <option value="EUR">EUR</option>
                             <option value="USD">USD</option>
                             <option value="MRU">MRU</option>
@@ -39,26 +43,26 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Cours:</label>
-                        <input type="number" class="form-control" name="taux" step="0.001" required>
+                        <input id="cours" type="number" class="form-control" name="cours" step="0.001" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Montant d'achat:</label>
-                        <input type="number" class="form-control" name="montant_achat" required>
+                        <input id="montant_achat" type="number" class="form-control" name="montant_achat" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Montant de vente:</label>
-                        <input type="number" class="form-control" name="montant_vendu" required>
+                        <input  id="montant_vendu" type="number" class="form-control" name="montant_vendu" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Type:</label>
-                        <select class="form-select" name="type" required>
+                        <select class="form-select" name="type" id="type" required>
                             <option value="IB">IB</option>
                             <option value="CORP">CORP</option>
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <label class="form-label">Direction:</label>
-                        <select class="form-select" name="direction" required>
+                        <label id="direction" class="form-label">Direction:</label>
+                        <select class="form-select" name="direction" required>  
                             <option value="Sell">Sell</option>
                             <option value="Buy">Buy</option>
                         </select>
@@ -100,4 +104,27 @@
         });
     }
 </script>
+
+
+<!-- <script>
+    document.getElementById("operationForm").addEventListener("submit", function(event) {
+        var form = document.getElementById("operationForm");
+        var elements = form.elements;
+        var isValid = true;
+    
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].tagName === "INPUT" && elements[i].hasAttribute("required")) {
+                if (!elements[i].value) {
+                    alert("Le champ " + elements[i].name + " est obligatoire.");
+                    isValid = false;
+                    break; // Arrête la boucle dès qu'un champ est vide
+                }
+            }
+        }
+    
+        if (!isValid) {
+            event.preventDefault(); // Empêche la soumission du formulaire
+        }
+    });
+    </script> -->
 {% endblock %}

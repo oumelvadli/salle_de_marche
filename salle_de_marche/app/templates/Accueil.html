@@ -5,54 +5,5 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid pt-4 px-4">
-  <div class="row g-4">
-      <div class="col-sm-12 col-xl-12">
-          <div class="bg-light rounded h-100 p-4">
-              <h6 class="mb-4">Accueil </h6>
-              <div class="m-n2" style="display: flex;justify-content: space-between;">
-                <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cours de Référence</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <canvas id="myChart" width="400" height="400"></canvas>
 
-  <script>
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
-        datasets: [{
-          label: 'Cours de Référence',
-          data: [100, 120, 110, 105, 115, 125], // Exemple de données (à remplacer par vos données réelles)
-          borderColor: 'rgb(75, 192, 192)',
-          borderWidth: 1,
-          fill: false
-        }]
-      },
-      options: {
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: false
-            }
-          }]
-        }
-      }
-    });
-  </script>
-</body>
-</html>
-
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
 {% endblock %}

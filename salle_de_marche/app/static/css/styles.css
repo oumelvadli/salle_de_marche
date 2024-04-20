@@ -277,52 +277,54 @@
 }
 
 .table_container {
-    width: 100%; /* ou une largeur fixe si nécessaire */
-    overflow: auto; /* ajoute la barre de défilement lorsque le contenu dépasse */
+  width: 100%; /* ou une largeur fixe si nécessaire */
+  overflow: auto; /* ajoute la barre de défilement lorsque le contenu dépasse */
 }
 
 
-          .table_visualiser {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-              color:black;
-          }
-          
-          .table_visualiser td, th {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-          }
-          
-          .table_visualiser th {
-            background-color: #2e57a6;
-          
-              color: white !important;
-            font-size: 14px;
-              text-align:left;
-          }
-          
-          
-          .table_visualiser tr.odd {
-            background-color: #f9f9f9;
-          }
-          
-          
-          .table_visualiser td.label_td {
-            font-weight: bold;
-          }
-          
-          .table_visualiser div.title_blue {
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-              text-align:center;
-          }
-          
-          
-          .table_visualiser div.content_td {
-            font-size: 14px;
-          }
-          .table_visualiser tr:hover {
-                  background-color: #009CFF;}
+        .table_visualiser {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 20px;
+            color:black;
+        }
+        
+        .table_visualiser td, th {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+        }
+        
+        .table_visualiser th {
+          background-color: #2e57a6;
+        
+            color: white !important;
+          font-size: 14px;
+            text-align:left;
+        }
+        
+        
+        .table_visualiser tr.odd {
+          background-color: #f9f9f9;
+        }
+        
+        
+        .table_visualiser td.label_td {
+          font-weight: bold;
+        }
+        
+        .table_visualiser div.title_blue {
+          color: white;
+          font-size: 20px;
+          font-weight: bold;
+            text-align:center;
+        }
+        
+        
+        .table_visualiser div.content_td {
+          font-size: 14px;
+        }
+        .table_visualiser tr:hover {
+                background-color: #009CFF;}
+
+

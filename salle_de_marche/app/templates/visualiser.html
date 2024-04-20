@@ -27,7 +27,7 @@
                     <div class="col-md-4 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary me-5">Filtrer</button>
                         <a class="btn btn-primary me-2" href="{% url 'export_to_excel_operations' %}">Export</a>
-                        <a class="btn btn-primary " href="{% url 'add_operation' %}">Ajoteur</a>
+                        <a class="btn btn-primary " id="ajouterOperationButton" >Ajoteur</a>
                     </div>
                 </form>
                 
@@ -51,8 +51,8 @@
                         <tbody>
                             {% for operation in page_obj %}
                             <tr>
-                                <td>{{ operation.date_operation | date:"Y/m/d" }}</td>
-                                <td>{{ operation.date_validation| date:"Y/m/d" }}</td>
+                                <td>{{ operation.date_operation | date:"d/m/Y" }}</td>
+                                <td>{{ operation.date_validation| date:"d/m/Y" }}</td>
                                 <td>{{ operation.conterpartie }}</td>
                                 <td>{{ operation.direction }}</td>
                                 <td>{{ operation.devise_achat }}</td>
@@ -65,6 +65,8 @@
                                     <div class="btn-group" role="group" aria-label="Actions">
                                         <a href="#"  class="btn btn-primary btn-sm"  onclick="editOperation( '{{ operation.date_operation | date:'Y-m-d' }}','{{ operation.date_validation | date:'Y-m-d' }}' , '{{ operation.conterpartie }}','{{ operation.devise_achat }}','{{ operation.devise_vente }}','{{ operation.cours }}','{{ operation.montant_achat }}','{{ operation.montant_vendu }}','{{ operation.type }}', '{{ operation.direction }}', '{{operation.id}}')">modifier</a>
                                         <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete('{{operation.id}}')">Supprimer</a>
+
+                                        <a href="{% url 'download_ticket' operation.id %}" class="btn btn-primary btn-sm" >Imprimer</a>
                                     </div>
                                 </td>
                             </tr>
@@ -178,6 +180,110 @@
 
 
 
+
+
+
+
+
+
+
+
+<div id="ajouterOperationModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter une Opération</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Contenu du formulaire de votre opération -->
+                <div class="container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-center">Ajouter une opération</h2>
+                        </div>
+                        <div class="card-body">
+                            <!-- Formulaire pour ajouter une nouvelle opération -->
+                            <form id="operation_form" method="post" action="{% url 'add_operation' %}">
+                                {% csrf_token %}
+                                <div class="col-md-4">
+                                    <label class="form-label">Date de l'opération:</label>
+                                    <input type="date" id="date_operation" class="form-control" name="date_operation" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Date de validation:</label>
+                                    <input type="date" id="date_validation" class="form-control" name="date_validation" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Contrepartie:</label>
+                                    <input type="text" id="conterpartie" class="form-control" name="conterpartie" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Devise d'achat:</label>
+                                    <select class="form-select" id="devise_achat" name="devise_achat" required>
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                        <option value="MRU">MRU</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Devise de vente:</label>
+                                    <select id="devise_vente" class="form-select" name="devise_vente" required>
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                        <option value="MRU">MRU</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Cours:</label>
+                                    <input id="cours" type="number" class="form-control" name="cours" step="0.001" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Montant d'achat:</label>
+                                    <input id="montant_achat" type="number" class="form-control" name="montant_achat" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Montant de vente:</label>
+                                    <input  id="montant_vendu" type="number" class="form-control" name="montant_vendu" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Type:</label>
+                                    <select class="form-select" name="type" id="type" required>
+                                        <option value="IB">IB</option>
+                                        <option value="CORP">CORP</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label id="direction" class="form-label">Direction:</label>
+                                    <select class="form-select" name="direction" required>  
+                                        <option value="Sell">Sell</option>
+                                        <option value="Buy">Buy</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 text-start">
+                                    <button type="submit" class="btn btn-primary">Soumettre</button>
+                                </div>
+                            
+                                <!-- Champs du formulaire pour les détails de l'opération -->
+                                <!-- Ajoutez ici le contenu de votre formulaire -->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript pour afficher le popup modal -->
+<script>
+    document.getElementById('ajouterOperationButton').addEventListener('click', function() {
+        // Afficher le popup modal
+        $('#ajouterOperationModal').modal('show');
+    });
+</script>
+
+
 <script>
 document.getElementById("dateForm").onsubmit = function() {
     var startDateInput = document.getElementById("start_date").value;
@@ -264,6 +370,5 @@ document.getElementById("dateForm").onsubmit = function() {
       return true;
   }
 </script>
-
 
 {% endblock %}

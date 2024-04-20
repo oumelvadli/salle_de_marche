@@ -34,4 +34,14 @@ urlpatterns = [
     path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
     path('change_password/<int:user_id>/', views.change_password, name='change_password'),
 
+
+
+    path('operation/<int:operation_id>/download/', views.download_ticket, name='download_ticket'),
+
+    #     path('', views.vue_principale, name='vue_principale'),
+    # path('update_date_ouverture/', views.update_date_ouverture, name='update_date_ouverture'),
+    # path('update_date_fermeture/', views.update_date_fermeture, name='update_date_fermeture'),
+
+   
+
 ]

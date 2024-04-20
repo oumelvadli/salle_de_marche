@@ -127,26 +127,35 @@ def importer_donnees(request):
     else:
         form = ExcelImportForm()
     return render(request, 'import.html', {'form': form,'navbar':'importer'})
+from django.db.models.functions import ExtractDay, ExtractMonth, ExtractYear
 
 @login_required
 def visualisation(request):
-    page_obj = Operation.objects.all()
-    return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation'})
+    # operations_list = Operation.objects.all()
+    operations_list = Operation.objects.all().order_by(
+        ExtractYear('date_operation').desc(),
+        ExtractMonth('date_operation').desc(),
+        ExtractDay('date_operation').desc()
+    )
+    return render(request, 'visualiser.html', {'page_obj': operations_list, 'navbar': 'visualisation'})
      
 from .forms import OperationForm
 
 
+
 def add_operation(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = OperationForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponse("L'opération a été ajoutée avec succès")
-        else:
-            return HttpResponse("Il y a eu une erreur dans le formulaire")
+            return redirect('visualisation')  # Rediriger vers la vue appropriée après l'ajout
     else:
         form = OperationForm()
-    return render(request, 'operation_form.html', {'form': form})
+    return render(request, 'visualiser.html', {'form': form})
+
+
+
+
 
 def update_operation(request, id):
     operation = Operation.objects.get(id=id)
@@ -320,3 +329,36 @@ def change_password(request, user_id):
             return redirect('users')
     else:
         return redirect('users')
+
+
+from django.shortcuts import get_object_or_404
+
+from django.template.loader import render_to_string
+# from weasyprint import HTML
+def download_ticket(request, operation_id):
+    # Récupérer l'opération
+    # operation = get_object_or_404(Operation, id=operation_id)
+
+    # # Rendre le template HTML en chaîne
+    # html_string = render_to_string('tickete.html', {'operation': operation})
+
+    # # Créer un PDF
+    # html = HTML(string=html_string)
+    # result = html.write_pdf()
+
+    # # Créer une réponse HTTP avec le PDF
+    # response = HttpResponse(result, content_type='application/pdf')
+    # response['Content-Disposition'] = 'attachment; filename="operation_{}.pdf"'.format(operation_id)
+
+    return "response"
+
+
+
+
+
+
+
+
+
+
+
