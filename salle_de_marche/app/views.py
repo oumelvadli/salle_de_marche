@@ -111,26 +111,51 @@ def importer_donnees(request):
         form = ExcelImportForm(request.POST, request.FILES)
         if form.is_valid():
             fichier_excel = request.FILES['fichier_excel']
-            data = pd.read_excel(fichier_excel, converters={'date_operation': lambda x: datetime.strptime(x, '%d/%m/%Y').date(),
-                'date_validation': lambda x: datetime.strptime(x, '%d/%m/%Y').date(),'montant_vendu': convertir_en_decimal, 'montant_achat': convertir_en_decimal})
-            imported_operations = 0  # Compteur d'opérations importées
-                
-            for index, row in data.iterrows():  
-                     operation_exists = Operation.objects.filter(
-                        Q(date_operation=row['date_operation']) &Q(date_validation=row['date_validation']) &Q(montant_vendu=row['montant_vendu']) &Q(conterpartie=row['conterpartie']) &Q(direction=row['direction']) & Q(devise_achat=row['devise_achat']) &Q(devise_vente=row['devise_vente']) &Q(cours=row['cours']) &Q(montant_achat=row['montant_achat']) &Q(type=row['type'])).exists()
+            if fichier_excel.name.endswith('.xlsx'):
+                try:
+                    data = pd.read_excel(fichier_excel, converters={'montant_vendu': convertir_en_decimal, 'montant_achat': convertir_en_decimal})
+                    imported_operations = 0  # Compteur d'opérations importées
 
-                     if not operation_exists:
-                        Operation.objects.create( date_operation=row['date_operation'],date_validation=row['date_validation'],conterpartie=row['conterpartie'],direction=row['direction'],devise_achat=row['devise_achat'],devise_vente=row['devise_vente'],cours=row['cours'], montant_achat=row['montant_achat'],montant_vendu=row['montant_vendu'],type=row['type']
-                        )
-                        imported_operations += 1
-            # return JsonResponse({'success': True, 'nombre_lignes_importees': imported_operations})
+                    for index, row in data.iterrows():
+                        # Vérifier si toutes les colonnes nécessaires sont présentes dans la ligne
+                        required_columns = ['date_operation', 'date_validation', 'montant_vendu', 'conterpartie', 'direction', 'devise_achat', 'devise_vente', 'cours', 'montant_achat', 'type']
+                        missing_columns = [col for col in required_columns if col not in row.index]
 
-            messages.success(request, f"{imported_operations} opérations ont été importées avec succès.")
-                
+                        if missing_columns:
+                            # Générer un message d'erreur indiquant les colonnes manquantes
+                            error_message = f"Les colonnes suivantes sont manquantes dans la ligne {index+1}: {', '.join(missing_columns)}"
+                            messages.error(request, error_message)
+                            return render(request, 'import.html', {'form': form})
+
+                        # Vérifier si une cellule est vide
+                        empty_cells = [col for col, value in row.items() if pd.isnull(value)]
+
+                        if empty_cells:
+                            # Générer un message d'erreur indiquant les cellules vides
+                            error_message = f"Les cellules suivantes sont vides dans la ligne {index+1}: {', '.join(empty_cells)}"
+                            messages.error(request, error_message)
+                            return render(request, 'import.html', {'form': form})
+
+                        operation_exists = Operation.objects.filter(
+                            Q(date_operation=row['date_operation']) & Q(date_validation=row['date_validation']) & Q(montant_vendu=row['montant_vendu']) & Q(conterpartie=row['conterpartie']) & Q(direction=row['direction']) & Q(devise_achat=row['devise_achat']) & Q(devise_vente=row['devise_vente']) & Q(cours=row['cours']) & Q(montant_achat=row['montant_achat']) & Q(type=row['type'])).exists()
+
+                        if not operation_exists:
+                            Operation.objects.create(date_operation=row['date_operation'], date_validation=row['date_validation'], conterpartie=row['conterpartie'], direction=row['direction'], devise_achat=row['devise_achat'], devise_vente=row['devise_vente'], cours=row['cours'], montant_achat=row['montant_achat'], montant_vendu=row['montant_vendu'], type=row['type'])
+                            imported_operations += 1
+
+                    messages.success(request, f"{imported_operations} opérations ont été importées avec succès.")
+                except Exception as e:
+                    # Gérer les exceptions lors de la lecture du fichier Excel
+                    messages.error(request, f"Une erreur s'est produite lors de l'importation du fichier Excel: {str(e)}")
+            else:
+                # Fichier non pris en charge
+                messages.error(request, 'Le fichier doit être au format Excel (.xlsx)')
                
     else:
         form = ExcelImportForm()
-    return render(request, 'import.html', {'form': form,'navbar':'importer'})
+    return render(request, 'import.html', {'form': form,'navbar': 'importer'})
+
+
 from django.db.models.functions import ExtractDay, ExtractMonth, ExtractYear
 
 @login_required
@@ -141,24 +166,22 @@ def visualisation(request):
         ExtractMonth('date_operation').desc(),
         ExtractDay('date_operation').desc()
     )
-    return render(request, 'visualiser.html', {'page_obj': operations_list, 'navbar': 'visualisation'})
+    paginator =Paginator(operations_list, 15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation'})
      
-from .forms import OperationForm
-
-
-
 def add_operation(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = OperationForm(request.POST)
+        print(form.errors)
         if form.is_valid():
             form.save()
-            return redirect('visualisation')  # Rediriger vers la vue appropriée après l'ajout
+            # messages.success(request,"L'operation  a été ajouté avec succès")
+        return redirect('visualisation')
     else:
         form = OperationForm()
     return render(request, 'visualiser.html', {'form': form})
-
-
-
 
 
 def update_operation(request, id):
