@@ -252,8 +252,10 @@ def meilleures_contreparties(request):
 
     context = {
         'meilleures_contreparties_ib': meilleures_contreparties_ib,
-        'meilleures_contreparties_corp': meilleures_contreparties_corp
+        'meilleures_contreparties_corp': meilleures_contreparties_corp,
     }
+    print(context)
+
     return render(request, 'meilleures_contreparties.html', context)
 
 def filter_operations(request):

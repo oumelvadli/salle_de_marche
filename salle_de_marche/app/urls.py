@@ -42,6 +42,7 @@ urlpatterns = [
     # path('update_date_ouverture/', views.update_date_ouverture, name='update_date_ouverture'),
     # path('update_date_fermeture/', views.update_date_fermeture, name='update_date_fermeture'),
 
+
    
 
 ]

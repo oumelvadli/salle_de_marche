@@ -1,6 +1,8 @@
-
 {% extends 'navbar.html' %}
 {% block content %}
+
+
+
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
         <div class="col-sm-12 col-xl-6">
@@ -44,4 +46,137 @@
             </div>
         </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="row mt-2"> 
+    <div class="col-md-6">
+        <canvas id="ib"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="corp" ></canvas>
+    </div>
+</div>
+
+
+
+          
+        
+        
+        
+        
+        
+        
+        
+        
+        
+      
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('ib');
+
+new Chart(ctx, {
+type: 'pie',
+data: {
+    labels: [{% for item in meilleures_contreparties_ib %}'{{ item.conterpartie }}',{% endfor %}],
+    datasets: [{
+        label: '# Meilleures Conterpartie IB',
+        data: [{% for item in meilleures_contreparties_ib %}'{{ item.total_ventes }}',{% endfor %}],
+        borderWidth: 1
+    }]
+},
+options: {
+    scales: {
+        y: {
+            beginAtZero: true
+        }
+    },
+    plugins: {
+        title: {
+            display: true,
+            text: 'Répartition des meilleures contreparties IB'
+        },
+        legend:{
+            position: 'bottom'
+        }
+    }
+}
+});
+</script>
+
+
+<script>
+const ctxx = document.getElementById('corp');
+
+new Chart(ctxx, {
+type: 'pie',
+data: {
+    labels: [{% for item in meilleures_contreparties_corp %}'{{ item.conterpartie }}', {% endfor %}],
+    datasets: [{
+        label: '# Meilleures Conterpartie CORP',
+        data: [{% for item in meilleures_contreparties_corp %}'{{ item.total_ventes }}',{% endfor %}],
+        borderWidth: 1
+    }]
+},
+options: {
+    scales: {
+        y: {
+            beginAtZero: true
+        }
+    },
+    plugins: {
+        title: {
+            display: true,
+            text: 'Répartition des meilleures contreparties CORP'
+        },
+        legend:{
+            position: 'bottom'
+        }
+    }
+}
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {% endblock %}
