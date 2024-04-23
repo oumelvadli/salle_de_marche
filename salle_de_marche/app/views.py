@@ -204,38 +204,35 @@ def delete_operation(request, id):
 def calcul_position(request):
     date_specifiee = request.GET.get('date_operation')
     if date_specifiee:
-            date_specifiee = datetime.strptime(date_specifiee, '%d/%m/%Y').date()
+        date_specifiee = datetime.strptime(date_specifiee, '%d/%m/%Y').date()
     else:
         date_specifiee = datetime.now().date()
 
     operations = Operation.objects.filter(date_operation=date_specifiee)
 
-    # Calcul du prix total d'achat et de vente pour chaque devise pour la date spécifiée
-    prix_achat_total = operations.exclude(devise_achat='MRU').values('devise_achat').annotate(prix_achat_total=Sum(F('montant_achat')))
-    prix_vente_total = operations.values('devise_vente').annotate(prix_vente_total=Sum(F('montant_vendu')))
-    cv_achat = operations.values('devise_achat').annotate(cv_achat=Sum(F('montant_achat')*F('cours')))
-    cv_vente = operations.values('devise_vente').annotate(cv_achat=Sum(F('montant_vendu')*F('cours')))
+    prix_achat_total = operations.exclude(devise_achat='MRU').values('devise_achat').annotate(
+        prix_achat_total=Sum(F('montant_achat')),
+        quantite_achat_total=Sum('montant_achat'),
+        cv_achat=Sum(F('montant_achat') * F('cours'))
+    ).annotate(
+        prix_moyen_achat=ExpressionWrapper(F('cv_achat') / F('quantite_achat_total'), output_field=DecimalField())
+    )
 
-    prix_moyen_achat = operations.values('devise_achat').annotate(
-        prix_achat_total=Sum(F('montant_achat') * F('cours')),
-        quantite_achat_total=Sum('montant_achat')
-    ).annotate(prix_moyen_achat=ExpressionWrapper(F('prix_achat_total') / F('quantite_achat_total'), output_field=DecimalField()))
-
-    prix_moyen_vente = operations.values('devise_vente').annotate(
-        prix_vente_total=Sum(F('montant_vendu') * F('cours')),
-        quantite_vente_total=Sum('montant_vendu')
-    ).annotate(prix_moyen_vente=ExpressionWrapper(F('prix_vente_total') / F('quantite_vente_total'), output_field=DecimalField()))
+    prix_vente_total = operations.values('devise_vente').annotate(
+        prix_vente_total=Sum(F('montant_vendu')),
+        quantite_vente_total=Sum('montant_vendu'),
+        cv_vente=Sum(F('montant_vendu') * F('cours'))
+    ).annotate(
+        prix_moyen_vente=ExpressionWrapper(F('cv_vente') / F('quantite_vente_total'), output_field=DecimalField())
+    )
 
     context = {
         'prix_achat_total': prix_achat_total,
         'prix_vente_total': prix_vente_total,
-        'prix_moyen_achat': prix_moyen_achat,
-        'prix_moyen_vente': prix_moyen_vente,
-        'cv_achat': cv_achat,
-        'cv_vente': cv_vente,
         'date_specifiee': date_specifiee,
-        'navbar':'calcul',
+        'navbar': 'calcul',
     }
+    print(context)
     return render(request, 'calcul.html', context)
 
 def meilleures_contreparties(request):

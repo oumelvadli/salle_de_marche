@@ -29,47 +29,43 @@
                             <th>C/V Achat</th>
                             <th>C/V Vente</th>
                         </tr>
-                        {% for item in prix_achat_total %}
-                        <tr>
-                            <td>{{ item.devise_achat | intcomma }}</td>
-                            <td>{{ item.prix_achat_total |floatformat:"2" | intcomma}}</td>
-                            <td>
-                                {% for vente_item in prix_vente_total %}
-                                    {% if vente_item.devise_vente == item.devise_achat %}
-                                        {{ vente_item.prix_vente_total|floatformat:"2" | intcomma }}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for moyen_achat_item in prix_moyen_achat %}
-                                    {% if moyen_achat_item.devise_achat == item.devise_achat %}
-                                        {{ moyen_achat_item.prix_moyen_achat |floatformat:"2"| intcomma }}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for moyen_vente_item in prix_moyen_vente %}
-                                    {% if moyen_vente_item.devise_vente == item.devise_achat %}
-                                        {{ moyen_vente_item.prix_moyen_vente|floatformat:"2" }}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for cv_item in cv_achat %}
-                                    {% if cv_item.devise_achat == item.devise_achat %}
-                                        {{ cv_item.cv_achat  |floatformat:"2" | intcomma}}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% for cv_item in cv_vente %}
-                                    {% if cv_item.devise_vente == item.devise_vente %}
-                                        {{ cv_item.cv_vente | floatformat:"2" | intcomma }}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        <tbody>
+                           <tbody>
+                            <!-- Itération sur les totaux d'achat -->
+                            {% for achat in prix_achat_total %}
+                            <tr>
+                                <td>{{ achat.devise_achat | intcomma }}</td>
+                                <td>{{ achat.prix_achat_total | floatformat:"2" | intcomma }}</td>
+                                <!-- Recherche correspondance dans totaux de vente -->
+                                <td>
+                                    {% for vente in prix_vente_total %}
+                                        {% if vente.devise_vente == achat.devise_achat %}
+                                            {{ vente.prix_vente_total | floatformat:"2" | intcomma }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ achat.prix_moyen_achat | floatformat:"2" | intcomma }}</td>
+                                <!-- Correspondant prix moyen vente -->
+                                <td>
+                                    {% for vente in prix_vente_total %}
+                                        {% if vente.devise_vente == achat.devise_achat %}
+                                            {{ vente.prix_moyen_vente | floatformat:"2" | intcomma }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ achat.cv_achat | floatformat:"2" | intcomma }}</td>
+                                <!-- Correspondant coût/vente -->
+                                <td>
+                                    {% for vente in prix_vente_total %}
+                                        {% if vente.devise_vente == achat.devise_achat %}
+                                            {{ vente.cv_vente | floatformat:"2" | intcomma }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        </tbody>
                     </table>
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{% url 'meilleures_contreparties'%}" class="btn btn-primary btn-sm me-md-2">Meilleures Contreparties</a>
