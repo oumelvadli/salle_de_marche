@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
 
 LOGIN_URL='connexion'
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -53,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'app.middleware.VerificationJourneeMiddleware',
+    # 'app.middleware.ExecuteAlertMiddleware',
 ]
 
 ROOT_URLCONF = 'salle_de_marche.urls'
@@ -74,6 +77,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'salle_de_marche.wsgi.application'
+ASGI_APPLICATION = 'salle_de_marche.asgi.application'
+
 
 
 # Database
@@ -138,3 +143,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
 
 URL_LOGIN="connexion"
+
+# celery
+CELLERY_BROKER_URL='redis://localhost:6379'
+CELLERY_RESULT_BACKEND='redis://localhost:6379'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+IEX_CLOUD_API_KEY = 'sk_********************************'

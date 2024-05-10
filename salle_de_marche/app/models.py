@@ -35,4 +35,8 @@ class Journee(models.Model):
     date_fermeture = models.DateTimeField(null=True, blank=True)
     est_ouvert = models.BooleanField(default=False)
 
+class Test(models.Model):
+    nom=models.CharField(max_length=50)
+    prenom=models.CharField(max_length=50)
+
 

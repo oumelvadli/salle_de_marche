@@ -1,6 +1,7 @@
 import datetime
-from datetime import datetime
+from datetime import datetime,timedelta
 
+from django.utils import timezone
 from django.shortcuts import render,redirect
 from .models import *
 from .forms import *
@@ -19,6 +20,11 @@ from django.core.paginator import Paginator
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField
 from django.http import HttpResponse,JsonResponse
 from openpyxl import Workbook
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+from django.http import JsonResponse
+
 
 
 
@@ -33,7 +39,9 @@ from django.shortcuts import get_object_or_404
 
 @login_required
 def Accueil(request):
-    return render(request,"Accueil.html",{'navbar':'Accueil'})
+    # Appeler la tâche Celery pour traiter les alertes
+    # Alert(request)
+    return render(request, "Accueil.html", {'navbar': 'Accueil'})
 
 def EoD(request):
     return render(request,"EoD.html",{'navbar':'EoD'})
@@ -199,6 +207,7 @@ def delete_operation(request, id):
         operation.delete()
         return redirect('visualisation')  
     return render(request, 'delete_operation.html', {'operation': operation})
+from django.db.models.functions import Coalesce
 
 @login_required
 def calcul_position(request):
@@ -207,7 +216,11 @@ def calcul_position(request):
         date_specifiee = datetime.strptime(date_specifiee, '%d/%m/%Y').date()
     else:
         date_specifiee = datetime.now().date()
+    date_finale = date_specifiee + timedelta(days=1)
 
+    
+    # Opérations sur 24 heures
+    operations = Operation.objects.filter(date_operation__gte=date_specifiee, date_operation__lt=date_finale)
     operations = Operation.objects.filter(date_operation=date_specifiee)
 
     prix_achat_total = operations.exclude(devise_achat='MRU').values('devise_achat').annotate(
@@ -226,13 +239,13 @@ def calcul_position(request):
         prix_moyen_vente=ExpressionWrapper(F('cv_vente') / F('quantite_vente_total'), output_field=DecimalField())
     )
 
+
     context = {
         'prix_achat_total': prix_achat_total,
         'prix_vente_total': prix_vente_total,
         'date_specifiee': date_specifiee,
         'navbar': 'calcul',
     }
-    print(context)
     return render(request, 'calcul.html', context)
 
 def meilleures_contreparties(request):
@@ -251,7 +264,7 @@ def meilleures_contreparties(request):
         'meilleures_contreparties_ib': meilleures_contreparties_ib,
         'meilleures_contreparties_corp': meilleures_contreparties_corp,
     }
-    print(context)
+
 
     return render(request, 'meilleures_contreparties.html', context)
 
@@ -379,12 +392,197 @@ def download_ticket(request, operation_id):
         return response
     else:
         return HttpResponse('Erreur lors de la génération du PDF.', status=500)
+    
+from .consumers import AlertConsumer
+
+SEUIL_VENTE_MAXIMAL_PAR_CONTREPARTIE = 100000  # Seuil de vente maximal par contrepartie
+
+# def limit():
+#     # Récupérer la date d'il y a 48 heures
+#     start_date = timezone.now() - timezone.timedelta(days=2)
+
+#     # Obtenir la liste des contreparties distinctes ayant des opérations de vente récentes
+#     distinct_counterparties = Operation.objects.filter(
+#         date_operation__gte=start_date,
+#         direction='Sell'  # Filtrer uniquement les ventes
+#     ).values_list('conterpartie', flat=True).distinct()
+
+#     # Pour chaque contrepartie, vérifier si le total vendu dépasse le seuil maximal
+#     alerts = {}
+#     for conterpartie in distinct_counterparties:
+#         total_sold = Operation.objects.filter(
+#             date_operation__gte=start_date,
+#             direction='Sell',  # Filtrer uniquement les ventes
+#             conterpartie=conterpartie  # Filtrer par contrepartie
+#         ).aggregate(total_sold=Sum('montant_vendu'))['total_sold'] or 0
+
+#         print(f"Total vendu pour {conterpartie} :", total_sold)
+
+#         alert = total_sold >= max(SEUIL_VENTE_MAXIMAL_PAR_CONTREPARTIE, 0)
+#         alerts[conterpartie] = (alert, total_sold)
+
+#     return alerts
 
 
 
 
 
 
+
+
+# def Alert(request):
+#     # Récupérer la date d'il y a 48 heures
+#     start_date = timezone.now() - timezone.timedelta(days=2)
+
+#     # Obtenir la liste des contreparties distinctes ayant des opérations de vente récentes
+#     distinct_counterparties = Operation.objects.filter(
+#         date_operation__gte=start_date,
+#         direction='Sell'  # Filtrer uniquement les ventes
+#     ).values_list('conterpartie', flat=True).distinct()
+
+#     # Initialisation des variables
+#     showAlert = False
+#     alertMessages = {}
+
+#     # Pour chaque contrepartie, vérifier si le total vendu dépasse le seuil maximal
+#     for contrepartie in distinct_counterparties:
+#         total_sold = Operation.objects.filter(
+#             date_operation__gte=start_date,
+#             direction='Sell',  # Filtrer uniquement les ventes
+#             conterpartie=contrepartie  # Filtrer par contrepartie
+#         ).aggregate(total_sold=Sum('montant_vendu'))['total_sold'] or 0
+
+#         print(f"Total vendu pour {contrepartie} :", total_sold)
+
+#         alert = total_sold >= max(SEUIL_VENTE_MAXIMAL_PAR_CONTREPARTIE, 0)
+#         if alert:
+#             showAlert = True
+#             alertMessages[contrepartie] = f"Alerte pour {contrepartie} : Vous êtes sur le point d'atteindre votre limite maximale de vente. Le total vendu est de {total_sold}."
+
+#             # Envoi du message via le canal WebSocket
+#             channel_layer = get_channel_layer()
+#             async_to_sync(channel_layer.group_send)(
+#                 'alert_group',  # Nom du groupe WebSocket
+#                 {
+#                     'type': 'alert_message',  # Nom de la méthode du consommateur
+#                     'message': alertMessages[contrepartie]  # Contenu du message
+#                 }
+#             )
+
+#     # Retourne la réponse JSON
+#     return JsonResponse({
+#         'showAlert': showAlert,
+#         'alertMessages': alertMessages
+#     })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Importations Django
+from django.http import JsonResponse
+from django.views.generic import View
+from django.conf import settings
+
+# Importation de la bibliothèque requests
+import requests
+
+# Vue pour récupérer les données boursièr
+def get(request):
+        # Récupération du symbole de l'action à partir des paramètres de requête
+        symbol = request.GET.get('symbol', None)
+        if not symbol:
+            return JsonResponse({'error': 'Veuillez fournir un symbole d\'action'})
+
+        # Construction de l'URL de l'API IEX Cloud
+        url = f'https://cloud.iexapis.com/stable/stock/{symbol}/quote?token={settings.IEX_CLOUD_API_KEY}'
+
+        # Effectuer la requête HTTP GET
+        response = requests.get(url)
+        if response.status_code != 200:
+            return JsonResponse({'error': 'Impossible de récupérer les données boursières'})
+
+        # Convertir la réponse JSON en dictionnaire Python
+        data = response.json()
+
+        # Retourner les données boursières en tant que réponse JSON
+        return JsonResponse(data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from .tasks import op
+
+def test_task(request):
+    result=1
+    for i in range(5):
+        Test.objects.create(
+            nom=f"mariem {i}",
+            prenom="mohamed",
+            
+           
+        )
+      
+        result="done"
+    return render(request,'task.html',{'result':result})
+
+
+
+# def test_recup(request,task_id):
+#     result=add.AsyncResult(task_id)
+#     if result.ready():
+#         return render(request,'recup.html',{'result':result.result})
+#     return render(request,'recup.html',{'result':"result not ready yet"})
 
 
 

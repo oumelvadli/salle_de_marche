@@ -28,6 +28,9 @@
                             <th>PMPV</th>
                             <th>C/V Achat</th>
                             <th>C/V Vente</th>
+                            <!-- <th>Position Initiale</th>
+                            <th>Position Finale</th> -->
+
                         </tr>
                         <tbody>
                            <tbody>
@@ -61,7 +64,21 @@
                                             {{ vente.cv_vente | floatformat:"2" | intcomma }}
                                         {% endif %}
                                     {% endfor %}
-                                </td>
+                                <!-- </td>
+                                <td colspan="7">{{ position_initiale | floatformat:"2" | intcomma }}</td>
+                                <td colspan="7">{{ position_finale | floatformat:"2" | intcomma }}</td> -->
+
+                
+
+
+
+
+
+
+
+
+
+
                             </tr>
                             {% endfor %}
                         </tbody>

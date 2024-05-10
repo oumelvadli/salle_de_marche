@@ -21,10 +21,61 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet" />
-
+    <!-- Inclure Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
     <!-- Feuille de styles personnalisée Bootstrap -->
     <link  href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-
+    <style>
+        /* CSS pour l'icône de notification */
+ #notification-icon {
+     position: relative;
+     margin-right: 20px; /* Ajustez selon votre mise en page */
+ }
+ 
+ #notification-icon img {
+     width: 30px; /* Ajustez la taille de l'icône */
+     cursor: pointer;
+ }
+ 
+ #notification-counter {
+     top: -5px;
+     right: -5px;
+     background-color: red;
+     color: white;
+     border-radius: 50%;
+     padding: 5px;
+     font-size: 12px;
+ }
+ 
+ /* CSS pour le dropdown list */
+ .dropdown-content {
+     display: none;
+     position: absolute;
+     background-color: #f9f9f9;
+     min-width: 160px;
+     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+     z-index: 1;
+ }
+ 
+ .dropdown-content a {
+     color: black;
+     padding: 12px 16px;
+     text-decoration: none;
+     display: block;
+ }
+ 
+ .dropdown-content a:hover {
+     background-color: #f1f1f1;
+ }
+ 
+ .notification {
+     margin-bottom: 10px;
+     padding: 10px;
+     border: 1px solid #ccc;
+     border-radius: 5px;
+ }
+ 
+     </style>
 
 
     <!-- datatable -->
@@ -80,20 +131,32 @@
                 <form class="d-none d-md-flex ms-4">
                     <input class="form-control border-0" type="search" placeholder="Rechercher">
                 </form>
-                <div class="navbar-nav align-items-center ms-auto">
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img class="rounded-circle me-lg-2" src="{% static 'img/user_logo.jpg' %}" alt="" style="width: 40px; height: 40px;">
-                            <span class="d-none d-lg-inline-flex">{{ user.username }}</span>
-                            
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <!-- <a href="#" class="dropdown-item">Mon Profil</a> -->
-                            <!-- <a href="#" class="dropdown-item">Paramètres</a> -->
-                            <a href="{% url 'deconnexion' %}" class="dropdown-item">Déconnexion</a>
-                        </div>
-                    </div>
-                </div>
+
+
+
+<div class="navbar-nav align-items-center ms-auto">
+    <!-- Notification Icon -->
+<div id="notification-icon" class="ms-3">
+    <!-- Affiche le nombre de notifications -->
+    <i class="fa-regular fa-bell"></i>
+    <span id="notification-counter">0</span>
+</div>
+<!-- Dropdown list des notifications -->
+<div id="notification-dropdown" class="dropdown-content">
+    <!-- Les notifications apparaîtront ici -->
+</div>
+    <div class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+            <img class="rounded-circle me-lg-2" src="{% static 'img/user_logo.jpg' %}" alt="" style="width: 40px; height: 40px;">
+            <span class="d-none d-lg-inline-flex">{{ user.username }}</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+            <!-- <a href="#" class="dropdown-item">Mon Profil</a> -->
+            <!-- <a href="#" class="dropdown-item">Paramètres</a> -->
+            <a href="{% url 'deconnexion' %}" class="dropdown-item">Déconnexion</a>
+        </div>
+    </div>
+</div>
             </nav>
             <!-- Barre de navigation Fin -->
             {% block content %}{% endblock %}
@@ -155,6 +218,50 @@
   <script src="{% static 'js/main.js' %}"></script>
 
   <script src="{% static 'js/popup.js' %}"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/alert_group/');
+        const notificationIcon = document.getElementById('notification-icon');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+
+        // Afficher ou masquer le dropdown list des notifications lors du clic sur l'icône de notification
+        notificationIcon.addEventListener('click', function () {
+            notificationDropdown.style.display = notificationDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Fonction pour ajouter une notification au dropdown list
+        function addNotification(message) {
+            const newNotification = document.createElement('a');
+            newNotification.textContent = message;
+            notificationDropdown.appendChild(newNotification);
+        }
+
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            const message = data.message;
+
+            // Créer un élément de notification
+            const notification = document.createElement('div');
+            notification.classList.add('notification');
+            notification.textContent = message;
+
+            // Ajouter la notification au dropdown list
+            notificationDropdown.appendChild(notification);
+
+            // Mettre à jour le compteur de notifications
+            const notificationCounter = document.getElementById('notification-counter');
+            notificationCounter.textContent = parseInt(notificationCounter.textContent) + 1;
+        };
+
+        socket.onclose = function (event) {
+            console.error('WebSocket fermé');
+        };
+
+        socket.onerror = function (error) {
+            console.error('Erreur WebSocket :', error);
+        };
+    });
+</script>
 
 
 </html>

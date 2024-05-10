@@ -38,9 +38,19 @@ urlpatterns = [
 
     path('operation/<int:operation_id>/download/', views.download_ticket, name='download_ticket'),
 
-    #     path('', views.vue_principale, name='vue_principale'),
+    #     path('', views.vue_principale,  name='vue_principale'),
     # path('update_date_ouverture/', views.update_date_ouverture, name='update_date_ouverture'),
     # path('update_date_fermeture/', views.update_date_fermeture, name='update_date_fermeture'),
+
+    path('Ac/', views.test_task, name='task'),
+
+    # path('h/', views.limit, name='check_threshold'),
+    # path('t/', views.Alert, name='alert'),
+    # path('test/<str:task_id>/', views.test_recup, name='recup'),
+    path('stock-data/', views.get, name='stock_data'),
+
+
+
 
 
    

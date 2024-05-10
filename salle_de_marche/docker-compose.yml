@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  django:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: 'msalledemarche''
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: ''
+      MYSQL_ROOT_PASSWORD: ''
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    command: celery -A salle_de_marche worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+
+  channels:
+    build: .
+    command: daphne -b 0.0.0.0 -p 8001 salle_de_marche.asgi:application
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis
