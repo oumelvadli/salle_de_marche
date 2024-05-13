@@ -40,8 +40,9 @@ from django.shortcuts import get_object_or_404
 @login_required
 def Accueil(request):
     # Appeler la tâche Celery pour traiter les alertes
+    session_status = SessionStatus.objects.first()
     # Alert(request)
-    return render(request, "Accueil.html", {'navbar': 'Accueil'})
+    return render(request, "Accueil.html", {'navbar': 'Accueil','session_status': session_status})
 
 def EoD(request):
     return render(request,"EoD.html",{'navbar':'EoD'})
@@ -51,8 +52,8 @@ def MarketData(request):
     Bande_fluctuations = Bande_fluctuation.objects.all().order_by('-date')
     # date_actuelle = datetime.date.today().strftime('%Y-%m-%d')
     date_actuelle = datetime.now().date()
-
-    return render(request,"MarketData.html",{'navbar':'MarketData','date_actuelle':date_actuelle,'Cours_revaluations':Cours_revaluations,'Bande_fluctuations':Bande_fluctuations})
+    session_status = SessionStatus.objects.first()
+    return render(request,"MarketData.html",{'navbar':'MarketData','date_actuelle':date_actuelle,'Cours_revaluations':Cours_revaluations,'Bande_fluctuations':Bande_fluctuations,'session_status': session_status})
 
 def Traitment(request):
     return render(request,"traitment.html",{'navbar':'Traitement'})
@@ -83,6 +84,8 @@ def update_cours(request, id):
                 messages.success(request,"Le cours du jour a été ajouté avec succès")
     
     return redirect('MarketData')
+
+
 
 def add_bande(request):
     if request.method == "POST":
@@ -115,6 +118,7 @@ def convertir_en_decimal(valeur):
     return Decimal(str(valeur).replace(',', ''))
 @login_required
 def importer_donnees(request):
+    session_status = SessionStatus.objects.first()
     if request.method == 'POST':
         form = ExcelImportForm(request.POST, request.FILES)
         if form.is_valid():
@@ -161,7 +165,7 @@ def importer_donnees(request):
                
     else:
         form = ExcelImportForm()
-    return render(request, 'import.html', {'form': form,'navbar': 'importer'})
+    return render(request, 'import.html', {'form': form,'navbar': 'importer','session_status': session_status})
 
 
 from django.db.models.functions import ExtractDay, ExtractMonth, ExtractYear
@@ -169,6 +173,7 @@ from django.db.models.functions import ExtractDay, ExtractMonth, ExtractYear
 @login_required
 def visualisation(request):
     # operations_list = Operation.objects.all()
+    session_status = SessionStatus.objects.first()
     operations_list = Operation.objects.all().order_by(
         ExtractYear('date_operation').desc(),
         ExtractMonth('date_operation').desc(),
@@ -177,7 +182,7 @@ def visualisation(request):
     paginator =Paginator(operations_list, 15)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation'})
+    return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation','session_status': session_status})
      
 def add_operation(request):
     if request.method == "POST":
@@ -212,6 +217,7 @@ from django.db.models.functions import Coalesce
 @login_required
 def calcul_position(request):
     date_specifiee = request.GET.get('date_operation')
+    session_status = SessionStatus.objects.first()
     if date_specifiee:
         date_specifiee = datetime.strptime(date_specifiee, '%d/%m/%Y').date()
     else:
@@ -245,6 +251,7 @@ def calcul_position(request):
         'prix_vente_total': prix_vente_total,
         'date_specifiee': date_specifiee,
         'navbar': 'calcul',
+        'session_status': session_status
     }
     return render(request, 'calcul.html', context)
 
@@ -321,8 +328,9 @@ def export_to_excel_reporting(request):
 @staff_member_required
 def gestion_utilisateurs(request):
     utilisateurs = User.objects.all()
+    session_status = SessionStatus.objects.first()
     form=CustomUerCreationForm()
-    return render(request, 'users.html', {'utilisateurs': utilisateurs,'form':form,'navbar': 'users'})
+    return render(request, 'users.html', {'utilisateurs': utilisateurs,'form':form,'navbar': 'users','session_status': session_status})
 
 def inscription(request):
     if request.method == 'POST':
@@ -392,6 +400,23 @@ def download_ticket(request, operation_id):
         return response
     else:
         return HttpResponse('Erreur lors de la génération du PDF.', status=500)
+    
+    
+    
+def update_session(request):
+    session_status = SessionStatus.objects.first()
+    if request.method == 'POST':
+        is_open=request.POST.get('is_open')
+        is_open = is_open.lower() == 'true'
+        session_status.is_open=is_open
+        session_status.start_jour=request.POST.get('start_jour')
+        session_status.start_time=request.POST.get('start_time')
+        session_status.end_jour=request.POST.get('end_jour')
+        session_status.end_time=request.POST.get('end_time')
+        session_status.save()
+        return redirect("Accueil")
+    return HttpResponse("Une erreure s'est produite lors de l'operation")
+
     
 from .consumers import AlertConsumer
 

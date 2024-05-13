@@ -38,5 +38,15 @@ class Journee(models.Model):
 class Test(models.Model):
     nom=models.CharField(max_length=50)
     prenom=models.CharField(max_length=50)
+    
+    
+    
+
+class SessionStatus(models.Model):
+    is_open = models.BooleanField(default=False)
+    start_jour = models.DateField(null=True, blank=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_jour = models.DateField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
 
 
