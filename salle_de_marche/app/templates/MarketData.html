@@ -37,6 +37,7 @@
                   
               </div>
               <br>
+              {% if session_status.is_open or user.is_staff %}
               <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
                 <div class="col-sm-12 col-xl-4 float-start">
                       <form id="addCoursForm" method="post" action="{% url 'add_cours' %}">
@@ -62,6 +63,8 @@
                       </form>
                 </div>
               </div>
+              {% endif %}
+              {% if session_status.is_open or user.is_staff %}
               <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
                 <div class="col-sm-12 col-xl-4 float-end">
 
@@ -92,7 +95,9 @@
                         <input type="submit" class="btn btn-lg btn-success m-2" value="Valider">
                     </form>
                 </div>
-            </div>
+              </div>
+              {% endif %}
+
           </div>
       </div>
 
@@ -117,7 +122,7 @@
                         <td>{{ cours.date }}</td>
                         <td>{{ cours.devise }}</td>
                         <td>{{ cours.cours }}</td>
-                        <td><a href="#"   onclick="editCours( '{{ cours.date | date:'Y-m-d' }}' , '{{ cours.devise }}', '{{ cours.cours }}', '{{cours.id}}')">modifier</a></td>
+                        <td><a href="#"   onclick="editCours( '{{ cours.date | date:'Y-m-d' }}' , '{{ cours.devise }}', '{{ cours.cours }}', '{{cours.id}}','{{session_status.is_open}}','{{user.is_staff}}')">modifier</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -145,7 +150,7 @@
                       <td>{{ bande.devise }}</td>
                       <td>{{ bande.Bid }}</td>
                       <td>{{ bande.Ask }}</td>
-                      <td><a href="#"    onclick="editBand( '{{ bande.date | date:'Y-m-d' }}' , '{{ bande.devise }}', '{{ bande.Bid }}','{{ bande.Ask }}' , '{{bande.id}}')">modifier</a></td>
+                      <td><a href="#"    onclick="editBand( '{{ bande.date | date:'Y-m-d' }}' , '{{ bande.devise }}', '{{ bande.Bid }}','{{ bande.Ask }}' , '{{bande.id}}','{{session_status.is_open}}','{{user.is_staff}}')">modifier</a></td>
                     </tr>
                   {% endfor %}
               </tbody>

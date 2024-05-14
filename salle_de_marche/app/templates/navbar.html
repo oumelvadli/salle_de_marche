@@ -26,6 +26,80 @@
     <!-- Feuille de styles personnalisée Bootstrap -->
     <link  href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <style>
+
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+          }
+          
+          /* Hide default HTML checkbox */
+          .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+          
+          /* The slider */
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+          
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+          
+          input:checked + .slider {
+            background-color: #2196F3;
+          }
+          
+          input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+          }
+          
+          input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+          }
+          
+          /* Rounded sliders */
+          .slider.round {
+            border-radius: 34px;
+          }
+          
+          .slider.round:before {
+            border-radius: 50%;
+          }
+
+
+
+
+
+
+
+
+
+
+
         /* CSS pour l'icône de notification */
  #notification-icon {
      position: relative;
@@ -128,9 +202,9 @@
                 <a href="#" class="sidebar-toggler flex-shrink-0">
                     <i class="fa fa-bars"></i>
                 </a>
-                <form class="d-none d-md-flex ms-4">
-                    <input class="form-control border-0" type="search" placeholder="Rechercher">
-                </form>
+                {% if user.is_staff %}
+                <a href="#" class="d-none d-md-flex ms-4" onclick="popup_session()">Modifier la session</a>
+                {% endif %}
 
 
 
@@ -183,12 +257,42 @@
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
 
-
+    <div id="popup_session" class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            
+            <form method="post" id="update_session" onsubmit="handleSubmit(event)">
+                <label for="start_time">Etat de la session:</label>
+                <label class="switch">
+                    <input id="is_open" type="checkbox" {% if session_status.is_open %}checked{% endif %}>
+                    <span class="slider round"></span>
+                  </label>
+                  <br><br>
+                  <label for="start_time">jour d'ouverture de la session:</label>
+                <br>
+                <input type="date" id="start_jour" name="start_jour" value="{% if session_status.start_jour %}{{ session_status.start_jour|date:'Y-m-d' }}{% endif %}" required>
+                <br>
+                <label for="start_time">Heure d'ouverture de la session:</label>
+                <br>
+                <input type="time" id="start_time" name="start_time" value="{% if session_status.start_time %}{{ session_status.start_time|time:"H:i" }}{% endif %}" required>
+                <br>
+                <label for="end_time">jour de fermeture de la session:</label>
+                <br>
+                <input type="date" id="end_jour" name="end_jour" value="{% if session_status.end_jour %}{{ session_status.end_jour|date:'Y-m-d' }}{% endif %}" required>
+                <br>
+                <label for="end_time">Heure de fermeture de la session:</label>
+                <br>
+                <input type="time" id="end_time" name="end_time" value="{% if session_status.end_time %}{{ session_status.end_time|time:"H:i" }}{% endif %}" required>
+                <br><br>
+                <input type="submit" value="Enregistrer">
+            </form>
+          </div>
+        </div>
+    </div>
 </body>
   <!-- datatable  -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-
 
   <script>
       $(document).ready( function () {
@@ -217,7 +321,7 @@
   <!-- JavaScript du modèle -->
   <script src="{% static 'js/main.js' %}"></script>
 
-  <script src="{% static 'js/popup.js' %}"></script>
+  <script src="{% static 'js/ppopup.js' %}"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
         const socket = new WebSocket((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws/alert_group/');
@@ -290,6 +394,67 @@
     });
     </script>
     
+
+<script>
+    function handleSubmit(event) {
+        event.preventDefault(); 
+
+        // Récupérer les valeurs des champs du formulaire
+        var is_open = document.getElementById("is_open").checked;
+        var start_jour = document.getElementById("start_jour").value;
+        var start_time = document.getElementById("start_time").value;
+        var end_jour = document.getElementById("end_jour").value;
+        var end_time = document.getElementById("end_time").value;
+
+        // Créer un formulaire HTML avec les données récupérées
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "{% url 'update_session' %}");
+
+        // Ajouter les champs du formulaire
+        var csrfInput = document.createElement("input");
+        csrfInput.setAttribute("type", "hidden");
+        csrfInput.setAttribute("name", "csrfmiddlewaretoken");
+        csrfInput.setAttribute("value", "{{ csrf_token }}");
+        form.appendChild(csrfInput);
+
+        var isOpenInput = document.createElement("input");
+        isOpenInput.setAttribute("type", "hidden");
+        isOpenInput.setAttribute("name", "is_open");
+        isOpenInput.setAttribute("value", is_open);
+        form.appendChild(isOpenInput);
+
+        var startDateInput = document.createElement("input");
+        startDateInput.setAttribute("type", "hidden");
+        startDateInput.setAttribute("name", "start_jour");
+        startDateInput.setAttribute("value", start_jour);
+        form.appendChild(startDateInput);
+
+        var startTimeInput = document.createElement("input");
+        startTimeInput.setAttribute("type", "hidden");
+        startTimeInput.setAttribute("name", "start_time");
+        startTimeInput.setAttribute("value", start_time);
+        form.appendChild(startTimeInput);
+
+        var endDateInput = document.createElement("input");
+        endDateInput.setAttribute("type", "hidden");
+        endDateInput.setAttribute("name", "end_jour");
+        endDateInput.setAttribute("value", end_jour);
+        form.appendChild(endDateInput);
+
+        var endTimeInput = document.createElement("input");
+        endTimeInput.setAttribute("type", "hidden");
+        endTimeInput.setAttribute("name", "end_time");
+        endTimeInput.setAttribute("value", end_time);
+        form.appendChild(endTimeInput);
+
+        // Ajouter le formulaire à la page et le soumettre
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+
 
 
 </html>

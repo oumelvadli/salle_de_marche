@@ -35,6 +35,7 @@ class AlertConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': data.get('message', 'Message non reçu correctement')
         }))
+        
     # async def receive(self, text_data):
     #     data = json.loads(text_data)
     #     await self.send(text_data=json.dumps({

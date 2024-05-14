@@ -48,7 +48,7 @@ $(document).ready(function(){
 setTimeout(function() {
     $('#success-alert').alert('close');
 }, 3000);
-function editCours(date, devise, cours, id) {
+function editCours(date, devise, cours, id,is_open,is_staff) {
     document.getElementById("editCoursDate").value = date;
     document.getElementById("editCoursDevise").value = devise;
     document.getElementById("editCoursValue").value = cours;
@@ -56,7 +56,13 @@ function editCours(date, devise, cours, id) {
 
 
     // Ouvrir le modal de modification
-    $('#editCours').modal('show');
+    if(is_open=='True' || is_staff == 'True'){
+        $('#editCours').modal('show');
+    }
+    
+}
+function popup_session() {
+    $('#popup_session').modal('show');
 }
  //______________ ici ce deux lignes ont pour but de verifier que la date est valide _________________
  var dateActuelle = new Date().toISOString().split('T')[0];
@@ -66,8 +72,8 @@ function editCours(date, devise, cours, id) {
  document.getElementById("editbandeDate").setAttribute("max", dateActuelle);
  //______________ fin _______________________
 
-  function editBand(date, devise, Bid,Ask, id) {
-      document.getElementById("editbandeDate").value = date;
+ function editBand(date, devise, Bid,Ask, id,is_open,is_staff) {
+    document.getElementById("editbandeDate").value = date;
       document.getElementById("editbandeDevise").value = devise;
       document.getElementById("editbandeBid").value = Bid;
       document.getElementById("editbandeAsk").value = Ask;
@@ -75,7 +81,10 @@ function editCours(date, devise, cours, id) {
 
 
       // Ouvrir le modal de modification
-      $('#editBande').modal('show');
+      if(is_open=='True' || is_staff == 'True'){
+        $('#editBande').modal('show');
+      }
+      
   }
     var dateActuelle = new Date().toISOString().slice(0,10);
   

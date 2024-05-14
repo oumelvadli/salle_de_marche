@@ -48,6 +48,7 @@ urlpatterns = [
     # path('t/', views.Alert, name='alert'),
     # path('test/<str:task_id>/', views.test_recup, name='recup'),
     path('stock-data/', views.get, name='stock_data'),
+    path('update_session/', views.update_session, name='update_session'),
 
 
 

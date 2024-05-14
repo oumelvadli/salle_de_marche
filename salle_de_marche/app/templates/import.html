@@ -37,8 +37,11 @@
                 {% endif %}
 
 
-
+{% if session_status.is_open or user.is_staff %}
 <form action="{% url 'importer_donnes' %}" id="importForm" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+{% else %}
+<form>
+{% endif %}
     {% csrf_token %}
     <label for="fileInput" class="form-label me-2">Sélectionnez le fichier à importer :</label>
     <div class="mb-3 d-flex align-items-center">
