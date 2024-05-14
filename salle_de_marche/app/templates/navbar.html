@@ -220,48 +220,76 @@
   <script src="{% static 'js/popup.js' %}"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const socket = new WebSocket('ws://' + window.location.host + '/ws/alert_group/');
+        const socket = new WebSocket((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws/alert_group/');
         const notificationIcon = document.getElementById('notification-icon');
         const notificationDropdown = document.getElementById('notification-dropdown');
-
-        // Afficher ou masquer le dropdown list des notifications lors du clic sur l'icône de notification
+    
+        // Afficher ou masquer le dropdown des notifications lors du clic sur l'icône de notification
         notificationIcon.addEventListener('click', function () {
             notificationDropdown.style.display = notificationDropdown.style.display === 'block' ? 'none' : 'block';
+            updateNotificationCounter(0); // Réinitialiser le compteur lorsque l'utilisateur voit les notifications
         });
-
-        // Fonction pour ajouter une notification au dropdown list
+    
+        // Fonction pour ajouter une notification au dropdown
         function addNotification(message) {
-            const newNotification = document.createElement('a');
-            newNotification.textContent = message;
-            notificationDropdown.appendChild(newNotification);
-        }
-
-        socket.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-            const message = data.message;
-
-            // Créer un élément de notification
             const notification = document.createElement('div');
             notification.classList.add('notification');
             notification.textContent = message;
-
-            // Ajouter la notification au dropdown list
             notificationDropdown.appendChild(notification);
-
-            // Mettre à jour le compteur de notifications
+        }
+    
+        // Mettre à jour le compteur de notifications
+        function updateNotificationCounter(count) {
             const notificationCounter = document.getElementById('notification-counter');
-            notificationCounter.textContent = parseInt(notificationCounter.textContent) + 1;
+            notificationCounter.textContent = count;
+        }
+    
+        // Charger et afficher les notifications stockées
+        function loadNotifications() {
+            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+            const validNotifications = notifications.filter(notification => {
+                return (new Date() - new Date(notification.date)) < 86400000; // 86400000ms = 24 heures
+            });
+    
+            // Mise à jour des notifications stockées après filtrage
+            localStorage.setItem('notifications', JSON.stringify(validNotifications));
+    
+            validNotifications.forEach(notification => addNotification(notification.message));
+            updateNotificationCounter(validNotifications.length);
+        }
+    
+        // Enregistrer les notifications dans localStorage
+        function saveNotification(message) {
+            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+            notifications.push({ message: message, date: new Date() });
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+        }
+    
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            const message = data.message;
+    
+            // Ajouter et enregistrer la notification
+            addNotification(message);
+            saveNotification(message);
+    
+            // Mettre à jour le compteur de notifications
+            updateNotificationCounter(notificationDropdown.children.length);
         };
-
+    
         socket.onclose = function (event) {
             console.error('WebSocket fermé');
         };
-
+    
         socket.onerror = function (error) {
             console.error('Erreur WebSocket :', error);
         };
+    
+        // Charger les notifications au démarrage
+        loadNotifications();
     });
-</script>
+    </script>
+    
 
 
 </html>

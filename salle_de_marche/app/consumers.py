@@ -10,8 +10,8 @@ class AlertConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        # Envoyer un message de test
-        await self.send(text_data=json.dumps({'message': 'Connexion réussie !'}))
+        
+        # Logger un message de test au lieu de l'envoyer
 
     async def disconnect(self, close_code):
         # Quitter le groupe
