@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'app',
     'auth_app',
     'django.contrib.humanize',
+    'django_celery_beat',
 ]
 
 LOGIN_URL='connexion'
@@ -145,8 +146,11 @@ STATIC_URL = '/static/'
 URL_LOGIN="connexion"
 
 # celery
-CELLERY_BROKER_URL='redis://localhost:6379'
-CELLERY_RESULT_BACKEND='redis://localhost:6379'
+CELERY_IMPORTS = ("tasks", )
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELLERY_RESULT_BACKEND='redis://localhost:6379/0'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',

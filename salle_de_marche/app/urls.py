@@ -42,13 +42,19 @@ urlpatterns = [
     # path('update_date_ouverture/', views.update_date_ouverture, name='update_date_ouverture'),
     # path('update_date_fermeture/', views.update_date_fermeture, name='update_date_fermeture'),
 
-    path('Ac/', views.test_task, name='task'),
 
     # path('h/', views.limit, name='check_threshold'),
     # path('t/', views.Alert, name='alert'),
     # path('test/<str:task_id>/', views.test_recup, name='recup'),
-    path('stock-data/', views.get, name='stock_data'),
     path('update_session/', views.update_session, name='update_session'),
+    path('task/', views.trigger_task, name='task'),
+    path('view/', views.view_corp, name='view_corp'),
+    path('ftp/', views.list_ftp_files, name='listftp'),
+    path('operationcorp/', views.visualisationCorp, name='OperationCorp'),
+
+
+
+
 
 
 

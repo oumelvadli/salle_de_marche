@@ -15,10 +15,9 @@ services:
   db:
     image: mysql:5.7
     environment:
-      MYSQL_DATABASE: 'msalledemarche''
-      MYSQL_USER: 'root'
-      MYSQL_PASSWORD: ''
-      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_DATABASE: 'salledemarche'
+      MYSQL_ROOT_PASSWORD: ''  # Utilisez cette ligne pour autoriser un mot de passe vide pour l'utilisateur root
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
     ports:
       - "3306:3306"
 
@@ -32,6 +31,9 @@ services:
     command: celery -A salle_de_marche worker --loglevel=info
     volumes:
       - .:/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
 

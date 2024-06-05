@@ -1,0 +1,82 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+
+
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">
+                <form method="GET" id="dateForm" action="{% url 'filter_operations' %}" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="start_date" class="form-label">Date de début:</label>
+                        <input type="" class="form-control" id="start_date" name="start_date"  >
+                        <div id="startDateError" class="text-danger"></div>
+
+
+                    </div>
+                    <div class="col-md-4">
+                        <label for="end_date" class="form-label">Date de fin:</label>
+                        <input type="" class="form-control" id="end_date" name="end_date" >
+                        <div id="endDateError" class="text-danger"></div>
+
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-5">Filtrer</button>
+                        <a class="btn btn-primary me-2" href="{% url 'export_to_excel_operations' %}">Export</a>
+
+                        {% if session_status.is_open or user.is_staff %}
+                        <a class="btn btn-primary " id="ajouterOperationButton" >Ajoteur</a>
+                        {% else %}
+                        <a class="btn btn-primary">Ajoteur</a>
+                        {% endif %}
+                        
+                    </div>
+                </form>
+                
+              <div class="table_container">
+                    <table id="myTable" class="table_visualiser">
+                        <thead>
+                            <tr>
+                                <th>MODEV</th>
+                                <th>NOOPER</th>
+                                <th>DATOPER</th>
+                                <th>DEVISEC</th>
+                                <th>DEVISED</th>
+                                <th>MNTDEVD</th>
+                                <th>MNTDEVC</th>
+                                <th>COURS12</th>
+                                <th>NOMD</th>
+                                <th>LIBELLE</th>
+                                <th>CLIENT</th>
+                               <th>COMPTEC</th> 
+                               <th>AGENCE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for OperationCorp in page_obj %}
+                            <tr>
+                                <td>{{ OperationCorp.modev  }}</td>
+                                <td>{{ OperationCorp.nooper}}</td>
+                                <td>{{ OperationCorp.datoper | date:"d/m/Y" }}</td>
+                                <td>{{ OperationCorp.devisec }}</td>
+                                <td>{{ OperationCorp.devised }}</td>
+                                <td>{{ OperationCorp.mntdevd}}</td>
+                                <td>{{ OperationCorp.mntdevc }}</td>
+                                <td>{{ OperationCorp.cours12  }}</td>
+                                <td>{{ OperationCorp.nomd }}</td>
+                                <td>{{ OperationCorp.client }}</td>
+                                <td>{{ OperationCorp.comptec }}</td>
+                                <td>{{ OperationCorp.agence }}</td>
+
+                               
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+        
+                    </table> 
+                </div>
+                    {% endblock %}

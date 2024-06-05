@@ -29,12 +29,6 @@ class Operation(models.Model):
     type = models.CharField(max_length=20)
     direction = models.CharField(max_length=10, blank=False,default='None')
     
-
-class Journee(models.Model):
-    date_overture = models.DateField(unique=True)
-    date_fermeture = models.DateTimeField(null=True, blank=True)
-    est_ouvert = models.BooleanField(default=False)
-
 class Test(models.Model):
     nom=models.CharField(max_length=50)
     prenom=models.CharField(max_length=50)
@@ -48,5 +42,22 @@ class SessionStatus(models.Model):
     start_time = models.TimeField(null=True, blank=True)
     end_jour = models.DateField(null=True, blank=True)
     end_time = models.TimeField(null=True, blank=True)
+
+
+
+class OperationCorp(models.Model):
+    modev = models.CharField(max_length=10)
+    nooper = models.CharField(max_length=100)
+    datoper = models.DateField()
+    devisec = models.CharField(max_length=10)
+    devised = models.CharField(max_length=10)
+    mntdevd = models.DecimalField(max_digits=15, decimal_places=2)
+    mntdevc = models.DecimalField(max_digits=15, decimal_places=2)
+    cours12 = models.DecimalField(max_digits=10, decimal_places=2)
+    nomd = models.CharField(max_length=100)
+    libelle = models.CharField(max_length=200)
+    client = models.CharField(max_length=100)
+    comptec = models.CharField(max_length=100)
+    agence = models.CharField(max_length=100)
 
 

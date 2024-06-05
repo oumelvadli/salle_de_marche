@@ -1,0 +1,9 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    Upload Excel: <input type="file" name="excel_file">
+    <input type="submit" value="Upload">
+</form>
+{% endblock %}

@@ -24,7 +24,10 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 from django.http import JsonResponse
-
+import ftplib
+from django.http import HttpResponse
+import tempfile
+import os
 
 
 
@@ -183,6 +186,20 @@ def visualisation(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation','session_status': session_status})
+
+@login_required
+def visualisationCorp(request):
+    # operations_list = Operation.objects.all()
+    session_status = SessionStatus.objects.first()
+    operations_list = OperationCorp.objects.all().order_by(
+        ExtractYear('datoper').desc(),
+        ExtractMonth('datoper').desc(),
+        ExtractDay('datoper').desc()
+    )
+    paginator =Paginator(operations_list, 15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'operationscorp.html', {'page_obj': page_obj, 'navbar': 'visualisation','session_status': session_status})
      
 def add_operation(request):
     if request.method == "POST":
@@ -501,73 +518,151 @@ SEUIL_VENTE_MAXIMAL_PAR_CONTREPARTIE = 100000  # Seuil de vente maximal par cont
 #     })
 
 
+# class Position(models.Model):
+#     date = models.DateField()
+#     devise = models.CharField(max_length=10)
+#     montant_initial = models.DecimalField(max_digits=10, decimal_places=2)
+#     montant_final = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+
+#     def __str__(self):
+#         return f"{self.date} | {self.devise} | Initial: {self.montant_initial}, Final: {self.montant_final}"
 
 
 
 
+def last_business_day():
+    today = datetime.date.today()
+    shift = datetime.timedelta(max(1, (today.weekday() + 6) % 7 - 3))
+    last_business_day = today - shift
+    return last_business_day
+
+def list_ftp_files(request):
+    ftp_server = os.getenv('FTP_SERVER', '10.158.120.210')
+    username = os.getenv('FTP_USERNAME', 'Moustapha')
+    password = os.getenv('FTP_PASSWORD', 'Admin@CDI123')
+
+    # Déterminez la date du dernier jour ouvrable
+    last_day = last_business_day()
+    remote_filename = f'operations/Op_de_change{last_day.strftime("%Y-%m-%d")}.xlsx'
+
+    temp_filename = None  # Initialisation de temp_filename
+
+    try:
+        # Connexion au serveur FTP
+        with ftplib.FTP(ftp_server) as ftp:
+            ftp.login(username, password)
+
+            # Vérifier si le fichier existe sur le serveur
+            files = ftp.nlst('operations')  # Obtenez la liste des fichiers dans le répertoire 'operations'
+            if remote_filename not in files:
+                return HttpResponse("Aucun fichier disponible pour le dernier jour ouvrable.", status=404)
+
+            # Télécharger le fichier s'il existe
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as temp_file:
+                ftp.retrbinary(f'RETR {remote_filename}', temp_file.write)
+                temp_filename = temp_file.name
+
+        # Lire le fichier Excel téléchargé
+        data = pd.read_excel(temp_filename)
+
+        # Injecter les données dans la base de données en évitant les doublons
+        for index, row in data.iterrows():
+            nooper = row['NOOPER']
+            datoper = row['DATOPER']
+            if not OperationCorp.objects.filter(nooper=nooper, datoper=datoper).exists():
+                OperationCorp.objects.create(
+                    modev=row['MODEV'],
+                    nooper=nooper,
+                    datoper=datoper,
+                    devisec=row['DEVISEC'],
+                    devised=row['DEVISED'],
+                    mntdevd=row['MNTDEVD'],
+                    mntdevc=row['MNTDEVC'],
+                    cours12=row['COURS12'],
+                    nomd=row['NOMD'],
+                    libelle=row['LIBELLE'],
+                    client=row['CLIENT'],
+                    comptec=row['COMPTEC'],
+                    agence=row['AGENCE'],
+                )
+
+        return HttpResponse("Données chargées avec succès dans la base de données.")
+
+    except ftplib.all_errors as e:
+        return HttpResponse(f"Erreur FTP : {e}", status=500)
+    except Exception as e:
+        return HttpResponse(f"Erreur lors du chargement des données : {e}", status=500)
+    finally:
+        if temp_filename and os.path.exists(temp_filename):
+            os.remove(temp_filename)
+
+
+# Assurez-vous d'importer HttpResponse de django.http
+from django.http import HttpResponse
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Importations Django
+# views.py
 from django.http import JsonResponse
-from django.views.generic import View
-from django.conf import settings
+from app.tasks import download_and_inject
 
-# Importation de la bibliothèque requests
-import requests
-
-# Vue pour récupérer les données boursièr
-def get(request):
-        # Récupération du symbole de l'action à partir des paramètres de requête
-        symbol = request.GET.get('symbol', None)
-        if not symbol:
-            return JsonResponse({'error': 'Veuillez fournir un symbole d\'action'})
-
-        # Construction de l'URL de l'API IEX Cloud
-        url = f'https://cloud.iexapis.com/stable/stock/{symbol}/quote?token={settings.IEX_CLOUD_API_KEY}'
-
-        # Effectuer la requête HTTP GET
-        response = requests.get(url)
-        if response.status_code != 200:
-            return JsonResponse({'error': 'Impossible de récupérer les données boursières'})
-
-        # Convertir la réponse JSON en dictionnaire Python
-        data = response.json()
-
-        # Retourner les données boursières en tant que réponse JSON
-        return JsonResponse(data)
+def trigger_task(request):
+    try:
+        download_and_inject.delay()
+        return JsonResponse({'status': 'Task has been triggered'})
+    except Exception as e:
+        return JsonResponse({'status': 'Error', 'message': str(e)})
 
 
 
 
 
 
+# def import_corp(request):
+#     if request.method == 'POST':
+#         excel_file = request.FILES.get("excel_file")
+#         if not excel_file:
+#             return HttpResponse("No file uploaded", status=400)
+
+#         try:
+#             df = pd.read_excel(excel_file)
+#         except Exception as e:
+#             return HttpResponse(f"Error reading the file: {e}", status=500)
+
+#         operationcorp = []
+#         for index, row in df.iterrows():
+#             try:
+#                 OperationCorp.append(OperationCorp(
+#                     modev=row['MODEV'],
+#                     nooper=row['NOOPER'],
+#                     datoper=pd.to_datetime(row['DATOPER']),
+#                     devisec=row['DEVISEC'],
+#                     devised=row['DEVISED'],
+#                     mntdevd=row['MNTDEVD'],
+#                     mntdevc=row['MNTDEVC'],
+#                     cours12=row['COURS12'],
+#                     nomd=row['NOMD'],
+#                     libelle=row['LIBELLE'],
+#                     client=row['CLIENT'],
+#                     comptec=row['COMPTEC'],
+#                     agence=row['AGENCE'],
+#                 ))
+#             except KeyError as e:
+#                 return HttpResponse(f"Missing data for {e}", status=400)
+        
+#         # Using bulk_create to optimize db inserts
+#         OperationCorp.objects.bulk_create(operationcorp)
+
+#         return redirect('/view')
+
+#     return render(request, 'corpform.html')
+
+
+
+
+def view_corp(request):
+    transactions = OperationCorp.objects.all()
+    return render(request, 'list.html', {'transactions': transactions})
 
 
 
@@ -580,34 +675,6 @@ def get(request):
 
 
 
-
-
-
-
-
-
-from .tasks import op
-
-def test_task(request):
-    result=1
-    for i in range(5):
-        Test.objects.create(
-            nom=f"mariem {i}",
-            prenom="mohamed",
-            
-           
-        )
-      
-        result="done"
-    return render(request,'task.html',{'result':result})
-
-
-
-# def test_recup(request,task_id):
-#     result=add.AsyncResult(task_id)
-#     if result.ready():
-#         return render(request,'recup.html',{'result':result.result})
-#     return render(request,'recup.html',{'result':"result not ready yet"})
 
 
 

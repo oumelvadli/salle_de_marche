@@ -5,10 +5,11 @@ from django.utils import timezone
 from .models import Operation
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-SEUIL_VENTE_MAXIMAL_PAR_CONTREPARTIE=100000
+SEUIL_VENTE_MAXIMAL_PAR_CONTREPARTIE = 100000
+
 @receiver(post_save, sender=Operation)
-def check_operation_alert(sender, instance, created, **kwargs):
-    if created and instance.direction == 'Sell':
+def check_operation_alert(sender, instance, **kwargs):
+    if instance.direction == 'Sell':
         start_date = timezone.now() - timezone.timedelta(days=2)
         total_sold = Operation.objects.filter(
             date_operation__gte=start_date,

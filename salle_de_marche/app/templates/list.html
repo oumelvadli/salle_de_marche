@@ -1,0 +1,81 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% block content %}
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        background-color: #f4f4f4;
+        margin: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 6px 10px; /* Reduced padding */
+        text-align: left;
+        font-size: 12px; /* Smaller font size */
+    }
+    th {
+        background-color: #f0f0f0;
+        color: #333;
+    }
+    tr:nth-child(even) {
+        background-color: #fafafa;
+    }
+    tr:hover {
+        background-color: #eaeaea;
+    }
+    h1 {
+        font-size: 16px; /* Smaller heading */
+        color: #333;
+        padding-left: 10px;
+    }
+</style>
+<body>
+    <h1>Transaction List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>MODEV</th>
+                <th>NOOPER</th>
+                <th>DATOPER</th>
+                <th>DEVISEC</th>
+                <th>DEVISED</th>
+                <th>MNTDEVD</th>
+                <th>MNTDEVC</th>
+                <th>COURS12</th>
+                <th>NOMD</th>
+                <th>LIBELLE</th>
+                <th>CLIENT</th>
+                <th>COMPTEC</th>
+                <th>AGENCE</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.modev }}</td>
+                <td>{{ transaction.nooper }}</td>
+                <td>{{ transaction.datoper|date:"d/m/Y" }}</td>
+                <td>{{ transaction.devisec }}</td>
+                <td>{{ transaction.devised }}</td>
+                <td>{{ transaction.mntdevd }}</td>
+                <td>{{ transaction.mntdevc }}</td>
+                <td>{{ transaction.cours12 }}</td>
+                <td>{{ transaction.nomd }}</td>
+                <td>{{ transaction.libelle }}</td>
+                <td>{{ transaction.client }}</td>
+                <td>{{ transaction.comptec }}</td>
+                <td>{{ transaction.agence }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+{% endblock %}

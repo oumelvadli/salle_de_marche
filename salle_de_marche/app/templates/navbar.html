@@ -148,7 +148,21 @@
      border: 1px solid #ccc;
      border-radius: 5px;
  }
- 
+ .dropdown-item {
+    color: #333; /* Couleur du texte */
+    transition: background-color 0.3s ease; /* Transition douce pour le survol */
+}
+ul.dropdown-menu {
+    background-color: rgba(255, 255, 255, 0.8); /* Fond semi-transparent */
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-top: 0.5rem;
+}
+.dropdown-item:hover {
+    background-color: #f0f0f0; /* Couleur de fond au survol */
+}
+
+
      </style>
 
 
@@ -169,27 +183,37 @@
         </div>
         <!-- Spinner Fin -->
 
-
-        <!-- Barre latérale Début -->
-        <div class="sidebar pe-4 pb-3">
-            <nav class="navbar bg-light navbar-light">
-                <a href="{% url 'Accueil' %}" class="navbar-brand mx-4 mb-3">
-                    <h3 class="text-primary"><img src="{% static 'img/logo_bea.png' %}" alt="" width="200px"></h3>
+<!-- Barre latérale Début -->
+<div class="sidebar pe-4 pb-3">
+    <nav class="navbar bg-light navbar-light">
+        <a href="{% url 'Accueil' %}" class="navbar-brand mx-4 mb-3">
+            <h3 class="text-primary"><img src="{% static 'img/logo_bea.png' %}" alt="" width="200px"></h3>
+        </a>
+        <div class="navbar-nav w-100">
+            <a href="{% url 'Accueil' %}" {% if navbar == "Accueil" %} class="nav-item nav-link active" {% endif %} class="nav-item nav-link "><i class="fa-solid fa-house"></i>Accueil</a>
+            <a href="{% url 'MarketData' %}" {% if navbar == "MarketData" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-magnifying-glass-chart fa-xl"></i>Market Data</a>
+            <a href="{% url 'importer_donnes' %}" {% if navbar == "importer" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-sharp fa-solid fa-download"></i>Import</a>
+            
+            <!-- Opérations avec sous-menu -->
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-eye"></i>Opérations
                 </a>
-                <div class="navbar-nav w-100">
-                    <a href="{% url 'Accueil' %}" {% if navbar == "Accueil" %} class="nav-item nav-link active" {% endif %}  class="nav-item nav-link "><i class="fa-solid fa-house"></i>Accueil</a>
-                    <a href="{% url 'MarketData' %}" {% if navbar == "MarketData" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-magnifying-glass-chart fa-xl"></i>Market Data</a>
-                    <a href="{% url 'importer_donnes' %}" {% if navbar == "importer" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-sharp fa-solid fa-download"></i>Import</a>
-                    <a href="{% url 'visualisation' %}" {% if navbar == "visualisation" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-eye"></i>Operations</a>
-                    <a href="{% url 'calcul' %}" {% if navbar == "calcul" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-chart-simple"></i>Reporting</a>
-                    <!-- <a href="{% url 'EoD' %}"  {% if navbar == "EoD" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-chart-simple"></i>EoD</a> -->
-                    {% if user.is_staff %}
-                    <li><a href="{% url 'users' %}" {% if navbar == "users" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-users-gear fa-lg"></i>Les utilisateurs</a></li>
-                    {% endif %}
-                </div>
-            </nav>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <li><a class="dropdown-item" href="{% url 'OperationCorp' %}">Opérations Corp</a></li>
+                    <li><a class="dropdown-item" href="{% url 'visualisation' %}" >Opérations InterB</a></li>
+                </ul>
+            </div>
+
+            <a href="{% url 'calcul' %}" {% if navbar == "calcul" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-chart-simple"></i>Reporting</a>
+            {% if user.is_staff %}
+            <li><a href="{% url 'users' %}" {% if navbar == "users" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-users-gear fa-lg"></i>Les utilisateurs</a></li>
+            {% endif %}
         </div>
-        <!-- Barre latérale Fin -->
+    </nav>
+</div>
+<!-- Barre latérale Fin -->
+
 
 
         <!-- Contenu Début -->
@@ -393,6 +417,7 @@
         loadNotifications();
     });
     </script>
+
     
 
 <script>
