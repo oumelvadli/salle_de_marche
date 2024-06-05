@@ -51,6 +51,8 @@ urlpatterns = [
     path('view/', views.view_corp, name='view_corp'),
     path('ftp/', views.list_ftp_files, name='listftp'),
     path('operationcorp/', views.visualisationCorp, name='OperationCorp'),
+    path('filter_operationscorp/', views.filter_operationscorp, name='filter_operationscorp'),
+
 
 
 

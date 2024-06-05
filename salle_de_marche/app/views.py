@@ -308,6 +308,22 @@ def filter_operations(request):
     page_obj = paginator.get_page(page_number)
     
     return render(request, 'visualiser.html', {'page_obj': page_obj})
+def filter_operationscorp(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    start_date = datetime.strptime(start_date, "%d/%m/%Y").strftime("%Y-%m-%d") if start_date else None
+    end_date = datetime.strptime(end_date, "%d/%m/%Y").strftime("%Y-%m-%d") if end_date else None
+    
+    operations_list = OperationCorp.objects.all()
+    
+    if start_date and end_date:
+        operations_list = operations_list.filter(datoper__range=[start_date, end_date])
+    
+    paginator = Paginator(operations_list, 10) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'operationscorp.html', {'page_obj': page_obj})
 
 
 def export_to_excel_operations(request):
