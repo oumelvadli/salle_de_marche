@@ -24,6 +24,12 @@ class OperationForm(forms.ModelForm):
         model = Operation
         fields = '__all__'
 
+class LimiteForm(forms.ModelForm):
+    class Meta:
+        model = LimiteContrepartie
+        fields = '__all__'
+
+
 
 #========================= create user =====================
 

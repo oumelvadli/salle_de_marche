@@ -683,6 +683,38 @@ def view_corp(request):
 
 
 
+def RisqueLimite(request):
+    # Obtenez la date et l'heure actuelles
+    now = datetime.now()
+    
+    # Calculez la date et l'heure il y a 48 heures
+    start_date = now - timedelta(hours=48)
+    
+    # Calculez le total des achats en devise USD dans les 48 dernières heures pour chaque contrepartie
+    operations = Operation.objects.filter(date_operation__gte=start_date, devise_achat='USD').values('conterpartie').annotate(total_achat=Sum('montant_achat'))
+    
+    # Récupérez les limites de contreparties pour chaque contrepartie
+    limites = LimiteContrepartie.objects.all()
+    
+    # Créez une liste pour stocker les données de chaque contrepartie
+    resultats = []
+    for limite in limites:
+        total_achat = operations.filter(conterpartie=limite.conterpartie).aggregate(total_achat=Sum('montant_achat')).get('total_achat', 0)
+        if total_achat is None:
+            total_achat = 0
+        montant_restant = limite.limite - total_achat if limite.limite is not None else None
+        
+        # Créez un objet contenant les données de chaque contrepartie
+        resultat = {
+            'conterpartie': limite.conterpartie,
+            'total_achat': total_achat,
+            'limite': limite.limite,
+            'montant_restant': montant_restant
+        }
+        resultats.append(resultat)
+    
+    # Envoyez les données calculées au template
+    return render(request, 'risque.html', {'resultats': resultats})
 
 
 
@@ -691,8 +723,16 @@ def view_corp(request):
 
 
 
-
-
-
+def add_limite(request):
+    if request.method == "POST":
+        form = LimiteForm(request.POST)
+        print(form.errors)
+        if form.is_valid():
+            form.save()
+            # messages.success(request,"L'operation  a été ajouté avec succès")
+        return redirect('RisqueLimite')
+    else:
+        form = LimiteForm()
+    return render(request, 'risque.html', {'form': form})
 
 

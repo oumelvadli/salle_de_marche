@@ -206,6 +206,8 @@ ul.dropdown-menu {
             </div>
 
             <a href="{% url 'calcul' %}" {% if navbar == "calcul" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-chart-simple"></i>Reporting</a>
+            <a href="{% url 'RisqueLimite' %}" {% if navbar == "RisqueLimite" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-regular fa-circle-xmark"></i>Risque Limite</a>
+
             {% if user.is_staff %}
             <li><a href="{% url 'users' %}" {% if navbar == "users" %}class="nav-item nav-link active" {% endif %} class="nav-item nav-link"><i class="fa-solid fa-users-gear fa-lg"></i>Les utilisateurs</a></li>
             {% endif %}

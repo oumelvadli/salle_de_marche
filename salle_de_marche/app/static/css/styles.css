@@ -279,6 +279,9 @@
 .table_container {
   width: 100%; /* ou une largeur fixe si nécessaire */
   overflow: auto; /* ajoute la barre de défilement lorsque le contenu dépasse */
+  margin-top: 20px; /* Ajoutez ici la marge supérieure désirée */
+
+
 }
 
 

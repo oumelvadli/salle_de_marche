@@ -52,6 +52,10 @@ urlpatterns = [
     path('ftp/', views.list_ftp_files, name='listftp'),
     path('operationcorp/', views.visualisationCorp, name='OperationCorp'),
     path('filter_operationscorp/', views.filter_operationscorp, name='filter_operationscorp'),
+    path('RisqueLimite/', views.RisqueLimite, name='RisqueLimite'),
+    path('add_limite/', views.add_limite, name='add_limite'),
+
+
 
 
 

@@ -1,0 +1,92 @@
+{% extends 'navbar.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<h1>   </h1><br>
+{% if session_status.is_open or user.is_staff %}
+                        <a class="btn btn-primary " id="ajouterOperationButton" >Ajoteur</a>
+                        {% else %}
+                        <a class="btn btn-primary">Ajoteur</a>
+                        {% endif %}
+                        
+<div class="table-container">
+    <table class="table_visualiser">
+        <thead>
+            <tr>
+                <th>Banque</th>
+                <th>Total encours-48h </th>
+                <th>Limite Change-USD</th>
+                <th>Encours Limite -48h</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resultat in resultats %}
+            <tr>
+                <td>{{ resultat.conterpartie | intcomma}}</td>
+                <td>{{ resultat.total_achat | intcomma}}</td>
+                <td>{{ resultat.limite | intcomma}}</td>
+                <td>{{ resultat.montant_restant | intcomma }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<div id="ajouterOperationModal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter une Limite</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form id="operation_form" method="post" action="{% url 'add_limite' %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="conterpartie" class="form-label">Contrepartie:</label>
+                                <input type="text" id="conterpartie" class="form-control" name="conterpartie" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ligne_48h:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Ligne_48h" id="oui" value="oui">
+                                    <label class="form-check-label" for="oui">Oui</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Ligne_48h" id="non" value="non" checked>
+                                    <label class="form-check-label" for="non">Non</label>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="limite" class="form-label">Limite:</label>
+                                <input type="number" id="limite" class="form-control" name="limite" value="0" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-center mb-3">
+                                    <button type="submit" class="btn btn-primary">Soumettre</button>
+                                </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    document.getElementById('ajouterOperationButton').addEventListener('click', function() {
+        // Afficher le popup modal
+        $('#ajouterOperationModal').modal('show');
+    });
+</script>
+
+
+{% endblock %}
