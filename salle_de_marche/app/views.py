@@ -177,15 +177,13 @@ from django.db.models.functions import ExtractDay, ExtractMonth, ExtractYear
 def visualisation(request):
     # operations_list = Operation.objects.all()
     session_status = SessionStatus.objects.first()
-    operations_list = Operation.objects.all().order_by(
+    operations_list = Operation.objects.filter(type='IB').order_by(
         ExtractYear('date_operation').desc(),
         ExtractMonth('date_operation').desc(),
         ExtractDay('date_operation').desc()
     )
-    paginator =Paginator(operations_list, 15)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return render(request, 'visualiser.html', {'page_obj': page_obj, 'navbar': 'visualisation','session_status': session_status})
+
+    return render(request, 'visualiser.html', {'page_obj': operations_list, 'navbar': 'visualisation','session_status': session_status})
 
 @login_required
 def visualisationCorp(request):
@@ -196,10 +194,8 @@ def visualisationCorp(request):
         ExtractMonth('datoper').desc(),
         ExtractDay('datoper').desc()
     )
-    paginator =Paginator(operations_list, 15)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return render(request, 'operationscorp.html', {'page_obj': page_obj, 'navbar': 'visualisation','session_status': session_status})
+
+    return render(request, 'operationscorp.html', {'page_obj': operations_list, 'navbar': 'visualisation','session_status': session_status})
      
 def add_operation(request):
     if request.method == "POST":
@@ -303,11 +299,8 @@ def filter_operations(request):
     if start_date and end_date:
         operations_list = operations_list.filter(date_operation__range=[start_date, end_date])
     
-    paginator = Paginator(operations_list, 10) 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
     
-    return render(request, 'visualiser.html', {'page_obj': page_obj})
+    return render(request, 'visualiser.html', {'page_obj': operations_list})
 def filter_operationscorp(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -319,11 +312,9 @@ def filter_operationscorp(request):
     if start_date and end_date:
         operations_list = operations_list.filter(datoper__range=[start_date, end_date])
     
-    paginator = Paginator(operations_list, 10) 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+
     
-    return render(request, 'operationscorp.html', {'page_obj': page_obj})
+    return render(request, 'operationscorp.html', {'page_obj': operations_list})
 
 
 def export_to_excel_operations(request):
