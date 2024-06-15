@@ -90,7 +90,8 @@ def add_cours(request):
         form = Cours_revaluationForm(request.POST)
         if form.is_valid():
             date = form.cleaned_data['date']
-            if Cours_revaluation.objects.filter(date=date).exists():
+            devise = form.cleaned_data['devise']
+            if Cours_revaluation.objects.filter(date=date,devise=devise).exists():
                 messages.error(request, 'Cette date existe déjà. Veuillez saisir une autre date.')
             else:
                 form.save()
@@ -104,7 +105,8 @@ def update_cours(request, id):
     form = Cours_revaluationForm(request.POST, instance=cours)
     if form.is_valid():
             date = form.cleaned_data['date']
-            if Cours_revaluation.objects.exclude(id=id).filter(date=date).exists():
+            devise = form.cleaned_data['devise']
+            if Cours_revaluation.objects.exclude(id=id).filter(date=date,devise=devise).exists():
                 messages.error(request, 'Cette date existe déjà. Veuillez saisir une autre date.')
             else:
                 form.save()
