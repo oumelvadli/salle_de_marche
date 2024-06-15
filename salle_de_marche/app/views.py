@@ -40,12 +40,36 @@ from django.template import loader
 from django.shortcuts import get_object_or_404
 
 
+
+
 @login_required
 def Accueil(request):
-    # Appeler la tâche Celery pour traiter les alertes
+    cours_eur = Cours_revaluation.objects.filter(devise='EUR').order_by('date')
+    cours_dates_eur = [cours.date.strftime('%Y-%m-%d') for cours in cours_eur]
+    cours_values_eur = [cours.cours for cours in cours_eur]
+    cours_dates_eur_json = json.dumps(cours_dates_eur)
+    cours_values_eur_json = json.dumps(cours_values_eur)
+
+    cours_usd = Cours_revaluation.objects.filter(devise='USD').order_by('date')
+    cours_dates_usd = [cours.date.strftime('%Y-%m-%d') for cours in cours_usd]
+    cours_values_usd = [cours.cours for cours in cours_usd]
+    cours_dates_usd_json = json.dumps(cours_dates_usd)
+    cours_values_usd_json = json.dumps(cours_values_usd)
+
+    date_actuelle = timezone.now().strftime('%Y-%m-%dT%H:%M:%S')  # Date actuelle au format ISO8601
     session_status = SessionStatus.objects.first()
-    # Alert(request)
-    return render(request, "Accueil.html", {'navbar': 'Accueil','session_status': session_status})
+
+    return render(request, "Accueil.html", {
+        'navbar': 'Accueil',
+        'date_actuelle': date_actuelle,
+        'cours_dates_eur': cours_dates_eur_json,
+        'cours_values_eur': cours_values_eur_json,
+        'cours_dates_usd': cours_dates_usd_json,
+        'cours_values_usd': cours_values_usd_json,
+        'session_status': session_status
+    })
+
+
 
 def EoD(request):
     return render(request,"EoD.html",{'navbar':'EoD'})

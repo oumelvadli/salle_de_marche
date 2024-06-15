@@ -1,6 +1,134 @@
 {% extends 'navbar.html' %}
-{% load static %}
-{% block content%}
 
+{% block title %}
+  Market Data
+{% endblock %}
+
+{% block content %}
+<!-- Inclure la bibliothèque Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- HTML pour les graphiques -->
+<div style="display: flex; justify-content: space-around;">
+    <div>
+        <canvas id="eurChart" width="400" height="400"></canvas>
+    </div>
+    <div>
+        <canvas id="usdChart" width="400" height="400"></canvas>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Données pour EUR
+        var datesEUR = {{ cours_dates_eur|safe }};
+        var valeursEUR = {{ cours_values_eur|safe }};
+        console.log("Dates EUR:", datesEUR);
+        console.log("Valeurs EUR:", valeursEUR);
+
+        // Données pour USD
+        var datesUSD = {{ cours_dates_usd|safe }};
+        var valeursUSD = {{ cours_values_usd|safe }};
+        console.log("Dates USD:", datesUSD);
+        console.log("Valeurs USD:", valeursUSD);
+
+        // Convertir les dates en objets Date
+        var datesEURFormatted = datesEUR.map(function(date) {
+            return new Date(date);
+        });
+
+        var datesUSDFormatted = datesUSD.map(function(date) {
+            return new Date(date);
+        });
+
+        // Configuration du graphique EUR
+        var ctxEUR = document.getElementById('eurChart').getContext('2d');
+        var eurChart = new Chart(ctxEUR, {
+            type: 'line',
+            data: {
+                labels: datesEUR,
+                datasets: [{
+                    label: 'EUR',
+                    backgroundColor: 'blue',
+                    borderColor: 'blue',
+                    data: valeursEUR,
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Cours de réévaluation EUR'
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'DD MMM YYYY' // Format jour mois année
+                            }
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Cours'
+                        }
+                    }]
+                }
+            }
+        });
+
+        // Configuration du graphique USD
+        var ctxUSD = document.getElementById('usdChart').getContext('2d');
+        var usdChart = new Chart(ctxUSD, {
+            type: 'line',
+            data: {
+                labels: datesUSD,
+                datasets: [{
+                    label: 'USD',
+                    backgroundColor: 'red',
+                    borderColor: 'red',
+                    data: valeursUSD,
+                    fill: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Cours de réévaluation USD'
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'DD MMM YYYY' // Format jour mois année
+                            }
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Cours'
+                        }
+                    }]
+                }
+            }
+        });
+    });
+</script>
 
 {% endblock %}
