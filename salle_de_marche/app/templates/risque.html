@@ -3,35 +3,44 @@
 {% load humanize %}
 
 {% block content %}
-<h1>   </h1><br>
-{% if session_status.is_open or user.is_staff %}
-                        <a class="btn btn-primary " id="ajouterOperationButton" >Ajoteur</a>
-                        {% else %}
-                        <a class="btn btn-primary">Ajoteur</a>
-                        {% endif %}
-                        
-<div class="table-container">
-    <table class="table_visualiser">
-        <thead>
-            <tr>
-                <th>Banque</th>
-                <th>Total encours-48h </th>
-                <th>Limite Change-USD</th>
-                <th>Encours Limite -48h</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for resultat in resultats %}
-            <tr>
-                <td>{{ resultat.conterpartie | intcomma}}</td>
-                <td>{{ resultat.total_achat | intcomma}}</td>
-                <td>{{ resultat.limite | intcomma}}</td>
-                <td>{{ resultat.montant_restant | intcomma }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-light rounded h-100 p-4">  
+                {% if session_status.is_open or user.is_staff %}
+                    <a class="btn btn-primary " id="ajouterOperationButton" >Ajouter</a>
+                {% else %}
+                    <a class="btn btn-primary">Ajouter</a>
+                {% endif %}   
+                <br> <br>            
+                <div class="table-container">
+                    <table class="table_visualiser">
+                        <thead>
+                            <tr>
+                                <th>Banque</th>
+                                <th>Total encours-48h </th>
+                                <th>Limite Change-USD</th>
+                                <th>Encours Limite -48h</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for resultat in resultats %}
+                            <tr>
+                                <td>{{ resultat.conterpartie | intcomma}}</td>
+                                <td>{{ resultat.total_achat | intcomma}}</td>
+                                <td>{{ resultat.limite | intcomma}}</td>
+                                <td>{{ resultat.montant_restant | intcomma }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 
 <div id="ajouterOperationModal" class="modal fade">

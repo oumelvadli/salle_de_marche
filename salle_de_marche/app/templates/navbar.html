@@ -236,11 +236,7 @@ ul.dropdown-menu {
 
 <div class="navbar-nav align-items-center ms-auto">
     <!-- Notification Icon -->
-<div id="notification-icon" class="ms-3">
-    <!-- Affiche le nombre de notifications -->
-    <i class="fa-regular fa-bell"></i>
-    <span id="notification-counter">0</span>
-</div>
+
 <!-- Dropdown list des notifications -->
 <div id="notification-dropdown" class="dropdown-content">
     <!-- Les notifications apparaîtront ici -->
@@ -285,33 +281,43 @@ ul.dropdown-menu {
 
     <div id="popup_session" class="modal fade">
         <div class="modal-dialog">
-          <div class="modal-content">
-            
-            <form method="post" id="update_session" onsubmit="handleSubmit(event)">
-                <label for="start_time">Etat de la session:</label>
-                <label class="switch">
-                    <input id="is_open" type="checkbox" {% if session_status.is_open %}checked{% endif %}>
-                    <span class="slider round"></span>
-                  </label>
-                  <br><br>
-                  <label for="start_time">jour d'ouverture de la session:</label>
-                <br>
-                <input type="date" id="start_jour" name="start_jour" value="{% if session_status.start_jour %}{{ session_status.start_jour|date:'Y-m-d' }}{% endif %}" required>
-                <br>
-                <label for="start_time">Heure d'ouverture de la session:</label>
-                <br>
-                <input type="time" id="start_time" name="start_time" value="{% if session_status.start_time %}{{ session_status.start_time|time:"H:i" }}{% endif %}" required>
-                <br>
-                <label for="end_time">jour de fermeture de la session:</label>
-                <br>
-                <input type="date" id="end_jour" name="end_jour" value="{% if session_status.end_jour %}{{ session_status.end_jour|date:'Y-m-d' }}{% endif %}" required>
-                <br>
-                <label for="end_time">Heure de fermeture de la session:</label>
-                <br>
-                <input type="time" id="end_time" name="end_time" value="{% if session_status.end_time %}{{ session_status.end_time|time:"H:i" }}{% endif %}" required>
-                <br><br>
-                <input type="submit" value="Enregistrer">
-            </form>
+            <div class="modal-content">
+              <div class="modal-header">						
+                <h4 class="modal-title">Modifier la session</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="col-sm-12 col-xl-12">
+                  <div class="bg-light rounded h-100 p-4">
+                    <form method="post" id="update_session" onsubmit="handleSubmit(event)">
+                        <div class="mb-3">
+                            <label class="form-label" for="start_time">Etat de la session:</label>
+                            <label class="switch">
+                                <input class="form-control" id="is_open" type="checkbox" {% if session_status.is_open %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="start_time" class="form-label">jour d'ouverture de la session:</label>
+                            <input type="date" id="start_jour" class="form-control" name="start_jour" value="{% if session_status.start_jour %}{{ session_status.start_jour|date:'Y-m-d' }}{% endif %}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="start_time" class="form-label">Heure d'ouverture de la session:</label>
+                            <input type="time" id="start_time" class="form-control" name="start_time" value="{% if session_status.start_time %}{{ session_status.start_time|time:"H:i" }}{% endif %}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="end_time" class="form-label">jour de fermeture de la session:</label>
+                            <input type="date" id="end_jour" class="form-control" name="end_jour" value="{% if session_status.end_jour %}{{ session_status.end_jour|date:'Y-m-d' }}{% endif %}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="end_time" class="form-label">Heure de fermeture de la session:</label>
+                            <input type="time" id="end_time" class="form-control" name="end_time" value="{% if session_status.end_time %}{{ session_status.end_time|time:"H:i" }}{% endif %}" required>
+                        </div>
+                        <input type="submit" value="Enregistrer" class="btn btn-lg btn-success m-2">
+                    </form>
+                  </div>
+                </div>
+              </div>
           </div>
         </div>
     </div>
