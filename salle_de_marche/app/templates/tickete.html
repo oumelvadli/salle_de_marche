@@ -1,19 +1,66 @@
-<!-- templates/operation_pdf.html -->
 <html>
 <head>
-    <title>Tickete de change</title>
+    <title>Ticket de change</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        td {
+            padding: 10px;
+            font-size: 10px;
+        }
+        img {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 150px; /* Ajustez la taille de l'image selon vos besoins */
+        }
+    </style>
 </head>
 <body>
-    <h1>Ticket de change</h1>
-    <p>Date d'opération: {{ operation.date_operation }}</p>
-    <p>Date de validation: {{ operation.date_validation }}</p>
-    <p>Contrepartie: {{ operation.conterpartie }}</p>
-    <p>Devise d'achat: {{ operation.devise_achat }}</p>
-    <p>Devise de vente: {{ operation.devise_vente }}</p>
-    <p>Cours: {{ operation.cours }}</p>
-    <p>Montant acheté: {{ operation.montant_achat }}</p>
-    <p>Montant vendu: {{ operation.montant_vendu }}</p>
-    <p>Type: {{ operation.type }}</p>
-    <p>Direction: {{ operation.direction }}</p>
+    <img src="../static/img/logo_bea.png" alt="">
+    <center><h1>Ticket de change : </h1></center>
+    <table>
+        <tr>
+            <td>Contrepartie:</td>
+            <td>{{ operation.conterpartie }}</td>
+        </tr>
+        <tr>
+            <td>Cours:</td>
+            <td>{{ operation.cours }}</td>
+        </tr>
+        <tr>
+            <td>Date d'opération:</td>
+            <td>{{ operation.date_operation }}</td>
+
+            <td>Date de validation:</td>
+            <td>{{ operation.date_validation }}</td>
+        </tr>
+        <tr>
+            <td>Devise d'achat:</td>
+            <td>{{ operation.devise_achat }}</td>
+
+            <td>Devise de vente:</td>
+            <td>{{ operation.devise_vente }}</td>
+        </tr>
+        <tr>
+            <td>Montant acheté:</td>
+            <td>{{ operation.montant_achat }}</td>
+            <td>Montant vendu:</td>
+            <td>{{ operation.montant_vendu }}</td>
+        </tr>
+        <tr>
+            <td>Type:</td>
+            <td>{{ operation.type }}</td>
+
+            <td>Direction:</td>
+            <td>{{ operation.direction }}</td>
+        </tr>
+    </table>
+
 </body>
 </html>
