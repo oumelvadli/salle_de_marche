@@ -290,7 +290,7 @@ ul.dropdown-menu {
             <form method="post" id="update_session" onsubmit="handleSubmit(event)">
                 <label for="start_time">Etat de la session:</label>
                 <label class="switch">
-                    <input id="is_open" type="checkbox" {% if session_status.is_open %}checked{% endif %}>
+                    <input id="is_open" type="checkbox" {% if session_status.is_open %}checked{% endif %} disabled>
                     <span class="slider round"></span>
                   </label>
                   <br><br>

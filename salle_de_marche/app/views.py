@@ -453,19 +453,41 @@ def download_ticket(request, operation_id):
     
     
     
+from django.shortcuts import redirect
+from django.http import HttpResponse
+from datetime import datetime
+
+
+
 def update_session(request):
     session_status = SessionStatus.objects.first()
     if request.method == 'POST':
-        is_open=request.POST.get('is_open')
-        is_open = is_open.lower() == 'true'
-        session_status.is_open=is_open
-        session_status.start_jour=request.POST.get('start_jour')
-        session_status.start_time=request.POST.get('start_time')
-        session_status.end_jour=request.POST.get('end_jour')
-        session_status.end_time=request.POST.get('end_time')
-        session_status.save()
-        return redirect("Accueil")
-    return HttpResponse("Une erreure s'est produite lors de l'operation")
+        start_jour = request.POST.get('start_jour')
+        start_time = request.POST.get('start_time')
+        end_jour = request.POST.get('end_jour')
+        end_time = request.POST.get('end_time')
+
+        try:
+            start_datetime = datetime.strptime(f"{start_jour} {start_time}", "%Y-%m-%d %H:%M")
+            end_datetime = datetime.strptime(f"{end_jour} {end_time}", "%Y-%m-%d %H:%M")
+            current_datetime = datetime.now()
+
+            if start_datetime <= current_datetime <= end_datetime:
+                session_status.is_open = True
+            else:
+                session_status.is_open = False
+
+            session_status.start_jour = start_jour
+            session_status.start_time = start_time
+            session_status.end_jour = end_jour
+            session_status.end_time = end_time
+            session_status.save()
+            
+            return redirect("Accueil")
+        except ValueError as e:
+            return HttpResponse(f"Erreur de format de date/heure: {e}")
+    return HttpResponse("Une erreur s'est produite lors de l'opération")
+
 
     
 from .consumers import AlertConsumer
